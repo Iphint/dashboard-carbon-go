@@ -1,0 +1,128 @@
+import { useState, useEffect, useCallback } from 'react';
+import { Calendar, CheckCircle2, Edit2, Lock, Plus, Target, Trash2, X } from 'lucide-react';
+import { CardSkeleton } from '../../components/admin/LoadingSkeleton';
+import ErrorState from '../../components/admin/ErrorState';
+import EmptyState from '../../components/admin/EmptyState';
+import { createMilestone, deleteMilestone, getMilestones, updateMilestone } from '../../services/adminApi';
+
+const emptyForm = { name: '', description: '', target_value: '' };
+
+export default function AdminMilestones() {
+  const [milestones, setMilestones] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [form, setForm] = useState(emptyForm);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getMilestones();
+      setMilestones(res.data?.milestones || res.data || []);
+    } catch {
+      setMilestones([]);
+      setError('Unable to fetch milestones. Make sure the API is connected.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const openForm = (milestone = null) => {
+    setEditing(milestone);
+    setForm(milestone ? {
+      name: milestone.name || '',
+      description: milestone.description || '',
+      target_value: milestone.target || milestone.target_value || '',
+    } : emptyForm);
+    setFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setEditing(null);
+    setForm(emptyForm);
+    setFormOpen(false);
+  };
+
+  const save = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      if (editing) await updateMilestone(editing.id, form);
+      else await createMilestone(form);
+      closeForm();
+      fetchData();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Unable to save milestone.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async (id) => {
+    await deleteMilestone(id);
+    fetchData();
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <button onClick={() => openForm()} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
+          <Plus className="w-4 h-4" />
+          Add Milestone
+        </button>
+      </div>
+
+      {formOpen && (
+        <form onSubmit={save} className="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
+          <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required type="number" min="0" placeholder="Target CU" value={form.target_value} onChange={(e) => setForm({ ...form, target_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <div className="flex gap-2">
+            <button disabled={saving} className="flex-1 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60">{saving ? 'Saving...' : editing ? 'Update' : 'Create'}</button>
+            <button type="button" onClick={closeForm} className="px-3 rounded-xl bg-gray-100 text-gray-600"><X className="w-4 h-4" /></button>
+          </div>
+        </form>
+      )}
+
+      {loading ? <CardSkeleton count={6} /> : error ? <ErrorState message={error} onRetry={fetchData} /> : !milestones.length ? (
+        <EmptyState title="No Milestones" description="No milestones data available." icon={Target} />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {milestones.map((m, i) => (
+            <div key={m.id || i} className={`rounded-2xl border p-5 transition-all hover:shadow-md ${m.achieved ? 'border-emerald-200 bg-emerald-50/30' : 'border-gray-100 bg-white'}`}>
+              <div className="flex items-start gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${m.achieved ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-400'}`}>
+                  {m.achieved ? <CheckCircle2 className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between gap-2">
+                    <h3 className="font-semibold text-gray-900">{m.name}</h3>
+                    <div className="flex gap-1">
+                      <button onClick={() => openForm(m)} className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"><Edit2 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => remove(m.id)} className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-500 mt-0.5">{m.description || 'Complete this milestone'}</p>
+                  <p className="text-xs text-gray-400 mt-2">Target: {m.target || m.target_value || 0} CU · Achieved by {m.achieved_count || 0} users</p>
+                  {m.achieved && m.achieved_at && (
+                    <div className="flex items-center gap-1 mt-2 text-xs text-emerald-600">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(m.achieved_at).toLocaleDateString('id-ID')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
