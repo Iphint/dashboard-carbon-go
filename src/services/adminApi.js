@@ -12,7 +12,6 @@ const apiClient = axios.create({
 
 axios.defaults.withCredentials = true;
 
-// Attach admin token to every request
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token');
   if (token) {
@@ -21,7 +20,6 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor for error handling
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
