@@ -1,14 +1,7 @@
 import axios from 'axios';
 
 function resolveApiBase() {
-  const envBase = import.meta.env.VITE_API_BASE_URL;
-  const host = window.location.hostname;
-
-  if (host === 'admin.carbongo.site') {
-    return envBase && !envBase.includes('localhost') ? envBase : 'https://carbongo.site/api';
-  }
-
-  return envBase || '/api';
+  return import.meta.env.VITE_API_BASE_URL || '/api';
 }
 
 const API_BASE = resolveApiBase();
@@ -25,9 +18,11 @@ axios.defaults.withCredentials = true;
 
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token');
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 
@@ -38,6 +33,7 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('admin_token');
       localStorage.removeItem('admin_role');
     }
+
     return Promise.reject(error);
   }
 );
@@ -90,7 +86,7 @@ export const updateCustomGreenAction = (id, payload) =>
 export const deleteCustomGreenAction = (id) =>
   apiClient.delete(`/admin/custom-green-actions/${id}`);
 
-// Progress (milestones, badges, quests)
+// Progress
 export const getUserProgress = (userId) =>
   apiClient.get(`/admin/users/${userId}/progress`);
 
@@ -105,19 +101,43 @@ export const getRankLogs = () =>
 export const getLeaderboard = (params = {}) =>
   apiClient.get('/admin/leaderboard', { params });
 
-export const getMilestones = () => apiClient.get('/admin/milestones');
-export const createMilestone = (payload) => apiClient.post('/admin/milestones', payload);
-export const updateMilestone = (id, payload) => apiClient.put(`/admin/milestones/${id}`, payload);
-export const deleteMilestone = (id) => apiClient.delete(`/admin/milestones/${id}`);
+// Milestones
+export const getMilestones = () =>
+  apiClient.get('/admin/milestones');
 
-export const getEcoBadges = () => apiClient.get('/admin/eco-badges');
-export const createEcoBadge = (payload) => apiClient.post('/admin/eco-badges', payload);
-export const updateEcoBadge = (id, payload) => apiClient.put(`/admin/eco-badges/${id}`, payload);
-export const deleteEcoBadge = (id) => apiClient.delete(`/admin/eco-badges/${id}`);
+export const createMilestone = (payload) =>
+  apiClient.post('/admin/milestones', payload);
 
-export const getQuests = () => apiClient.get('/admin/quests');
-export const createQuest = (payload) => apiClient.post('/admin/quests', payload);
-export const updateQuest = (id, payload) => apiClient.put(`/admin/quests/${id}`, payload);
-export const deleteQuest = (id) => apiClient.delete(`/admin/quests/${id}`);
+export const updateMilestone = (id, payload) =>
+  apiClient.put(`/admin/milestones/${id}`, payload);
+
+export const deleteMilestone = (id) =>
+  apiClient.delete(`/admin/milestones/${id}`);
+
+// Eco Badges
+export const getEcoBadges = () =>
+  apiClient.get('/admin/eco-badges');
+
+export const createEcoBadge = (payload) =>
+  apiClient.post('/admin/eco-badges', payload);
+
+export const updateEcoBadge = (id, payload) =>
+  apiClient.put(`/admin/eco-badges/${id}`, payload);
+
+export const deleteEcoBadge = (id) =>
+  apiClient.delete(`/admin/eco-badges/${id}`);
+
+// Quests
+export const getQuests = () =>
+  apiClient.get('/admin/quests');
+
+export const createQuest = (payload) =>
+  apiClient.post('/admin/quests', payload);
+
+export const updateQuest = (id, payload) =>
+  apiClient.put(`/admin/quests/${id}`, payload);
+
+export const deleteQuest = (id) =>
+  apiClient.delete(`/admin/quests/${id}`);
 
 export default apiClient;
