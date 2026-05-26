@@ -1,6 +1,17 @@
 import axios from 'axios';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+function resolveApiBase() {
+  const envBase = import.meta.env.VITE_API_BASE_URL;
+  const host = window.location.hostname;
+
+  if (host === 'admin.carbongo.site') {
+    return envBase && !envBase.includes('localhost') ? envBase : 'https://carbongo.site/api';
+  }
+
+  return envBase || '/api';
+}
+
+const API_BASE = resolveApiBase();
 
 const apiClient = axios.create({
   baseURL: API_BASE,
