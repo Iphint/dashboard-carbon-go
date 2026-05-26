@@ -26,15 +26,20 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     const requestUrl = error.config?.url || '';
-    if (error.response?.status === 401 && requestUrl !== '/auth/login') {
+    const isAuthProbe = requestUrl === '/auth/me';
+    const isLoginRequest = requestUrl === '/auth/login';
+    const isAlreadyOnLogin = window.location.pathname === '/admin/login';
+    const isAlreadyOnUnauthorized = window.location.pathname === '/admin/unauthorized';
+
+    if (error.response?.status === 401 && !isLoginRequest && !isAuthProbe && !isAlreadyOnLogin) {
       localStorage.removeItem('admin_token');
       localStorage.removeItem('admin_role');
-      window.location.href = '/admin/login';
+      window.location.assign('/admin/login');
     }
-    if (error.response?.status === 403) {
+    if (error.response?.status === 403 && !isAlreadyOnUnauthorized) {
       localStorage.removeItem('admin_token');
       localStorage.removeItem('admin_role');
-      window.location.href = '/admin/unauthorized';
+      window.location.assign('/admin/unauthorized');
     }
     return Promise.reject(error);
   }

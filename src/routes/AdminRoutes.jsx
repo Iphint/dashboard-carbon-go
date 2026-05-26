@@ -39,6 +39,12 @@ function AdminGuard({ children }) {
   return children;
 }
 
+function AdminIndexRedirect() {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return <Navigate to={user?.role === 'admin' ? '/admin/dashboard' : '/admin/login'} replace />;
+}
+
 export default function AdminRoutes() {
   return (
     <Routes>
@@ -65,7 +71,7 @@ export default function AdminRoutes() {
         <Route path="rank-logs" element={<AdminRankLogs />} />
       </Route>
       {/* Keep every dashboard route under the /admin namespace. */}
-      <Route path="/" element={<Navigate to="/admin" replace />} />
+      <Route path="/" element={<AdminIndexRedirect />} />
       <Route path="*" element={<Navigate to="/admin" replace />} />
     </Routes>
   );
