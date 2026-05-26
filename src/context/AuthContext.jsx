@@ -8,6 +8,10 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (window.location.pathname === '/admin/login') {
+      setLoading(false);
+      return;
+    }
     checkAuth();
   }, []);
 
@@ -24,7 +28,12 @@ export function AuthProvider({ children }) {
 
   const login = async ({ username, password }) => {
     const response = await loginAuth({ username, password });
-    await checkAuth();
+    const loggedInUser = response.data?.user;
+    if (!loggedInUser || loggedInUser.role !== 'admin') {
+      setUser(null);
+      throw new Error('Admin access required.');
+    }
+    setUser(loggedInUser);
     return response.data;
   };
 

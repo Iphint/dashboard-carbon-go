@@ -22,7 +22,7 @@ export default function AdminLogin() {
       await login(form);
       navigate('/admin/dashboard', { replace: true });
     } catch (err) {
-      const message = err.response?.data?.message || 'Login failed. Check your admin username and password.';
+      const message = err.response?.data?.message || err.message || 'Login failed. Check your admin username and password.';
       setError(message);
     } finally {
       setSubmitting(false);
