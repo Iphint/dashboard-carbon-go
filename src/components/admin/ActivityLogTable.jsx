@@ -1,6 +1,19 @@
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import EmptyState from './EmptyState';
 
+const typeStyles = {
+  good: 'bg-emerald-50 text-emerald-700',
+  bad: 'bg-red-50 text-red-700',
+  neutral: 'bg-amber-50 text-amber-700',
+  custom: 'bg-purple-50 text-purple-700',
+};
+
+const sourceStyles = {
+  custom: 'bg-purple-100 text-purple-700',
+  neutral: 'bg-amber-100 text-amber-700',
+  default: 'bg-gray-100 text-gray-600',
+};
+
 export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, onPageChange, onDelete }) {
   if (!logs.length) {
     return <EmptyState title="No Activity Logs" description="No activity logs found for the current filters." />;
@@ -32,7 +45,7 @@ export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, 
                 </td>
                 <td className="px-4 py-3 font-medium text-gray-900">{log.name || '—'}</td>
                 <td className="px-4 py-3">
-                  <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-blue-50 text-blue-700">
+                  <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${typeStyles[log.type] || 'bg-blue-50 text-blue-700'}`}>
                     {log.type || '—'}
                   </span>
                 </td>
@@ -41,15 +54,17 @@ export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, 
                 <td className="px-4 py-3 font-medium text-gray-700">{log.eco_point ?? '—'}</td>
                 <td className="px-4 py-3">
                   <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
-                    log.is_good ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                    log.type === 'neutral'
+                      ? 'bg-amber-100 text-amber-700'
+                      : log.is_good
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-red-100 text-red-700'
                   }`}>
-                    {log.is_good ? 'Good' : 'Bad'}
+                    {log.type === 'neutral' ? 'Neutral' : log.is_good ? 'Good' : 'Bad'}
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
-                    log.source === 'custom' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600'
-                  }`}>
+                  <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${sourceStyles[log.source] || sourceStyles.default}`}>
                     {log.source || 'default'}
                   </span>
                 </td>

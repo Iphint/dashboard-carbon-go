@@ -9,6 +9,7 @@ const FILTERS = [
   { label: 'All', value: 'all' },
   { label: 'Good Actions', value: 'good' },
   { label: 'Bad Actions', value: 'bad' },
+  { label: 'Neutral / No Special', value: 'neutral' },
   { label: 'Custom Green', value: 'custom' },
   { label: 'Default', value: 'default' },
 ];
