@@ -8,7 +8,8 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (window.location.pathname === '/admin/login') {
+    const publicAdminPaths = ['/admin/login', '/admin/unauthorized'];
+    if (publicAdminPaths.includes(window.location.pathname)) {
       setLoading(false);
       return;
     }
