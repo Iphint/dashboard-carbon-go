@@ -61,7 +61,7 @@ export default function AdminMilestones() {
       closeForm();
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to save milestone.');
+      setError(err.response?.data?.message || t('saveMilestoneError'));
     } finally {
       setSaving(false);
     }

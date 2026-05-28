@@ -1,4 +1,4 @@
-import { Shield, Lock, Calendar, ChevronRight } from 'lucide-react';
+import { Shield, Lock, Calendar } from 'lucide-react';
 import { useAdminLanguage } from '../../context/LanguageContext';
 
 const RANKS = [
@@ -40,17 +40,21 @@ export default function RankTimeline({ rankLogs = [], summary = false }) {
           const achievedDate = achievedRanks[rankKey];
           const c = colorMap[rank.color];
           const isLast = index === RANKS.length - 1;
+          const summaryCount = countByRank[rankKey] || 0;
+          const highlighted = summary || achieved;
 
           return (
-            <div key={rank.name} className="flex gap-4">
+            <div key={rank.name} className={`flex gap-4 ${summary ? `rounded-2xl border p-4 mb-3 ${c.bg} ${c.border}` : ''}`}>
               {/* Timeline line */}
               <div className="flex flex-col items-center">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0 ${
-                  achieved ? `${c.bg} ${c.border} border-2` : 'bg-gray-50 border border-gray-200'
+                  summary
+                    ? `bg-white ${c.border} border-2 shadow-sm`
+                    : achieved ? `${c.bg} ${c.border} border-2` : 'bg-gray-50 border border-gray-200'
                 }`}>
-                  {achieved ? rank.icon : <Lock className="w-4 h-4 text-gray-300" />}
+                  {highlighted ? rank.icon : <Lock className="w-4 h-4 text-gray-300" />}
                 </div>
-                {!isLast && (
+                {!isLast && !summary && (
                   <div className={`w-0.5 h-12 ${achieved ? c.line : 'bg-gray-100'}`} />
                 )}
               </div>
@@ -58,27 +62,26 @@ export default function RankTimeline({ rankLogs = [], summary = false }) {
               {/* Content */}
               <div className="pb-8 flex-1">
                 <div className="flex items-center gap-2">
-                  <h4 className={`font-semibold text-sm ${achieved ? c.text : 'text-gray-400'}`}>
+                  <h4 className={`font-semibold text-sm ${highlighted ? c.text : 'text-gray-400'}`}>
                     {t(rank.labelKey)}
                   </h4>
-                  {achieved && (
+                  {achieved && !summary && (
                     <span className={`inline-flex px-2 py-0.5 text-[10px] font-medium rounded-full ${c.bg} ${c.text}`}>
                       {t('achieved')}
                     </span>
                   )}
-                  {!achieved && (
+                  {summary && (
+                    <span className="inline-flex px-2 py-0.5 text-[10px] font-medium rounded-full bg-white text-gray-700">
+                      {t('achievedByUsers', { count: summaryCount })}
+                    </span>
+                  )}
+                  {!achieved && !summary && (
                     <span className="inline-flex px-2 py-0.5 text-[10px] font-medium rounded-full bg-gray-100 text-gray-400">
-                      {summary ? t('achievedByUsers', { count: 0 }) : t('locked')}
+                      {t('locked')}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">{t(rank.descriptionKey)}</p>
-                {summary && (
-                  <div className="flex items-center gap-1 mt-1.5 text-xs text-gray-500">
-                    <ChevronRight className="w-3 h-3" />
-                    {t('achievedByUsers', { count: countByRank[rankKey] || 0 })}
-                  </div>
-                )}
                 {!summary && achieved && achievedDate && (
                   <div className="flex items-center gap-1 mt-1.5 text-xs text-gray-500">
                     <Calendar className="w-3 h-3" />

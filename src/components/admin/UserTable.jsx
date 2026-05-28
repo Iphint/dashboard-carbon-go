@@ -12,7 +12,7 @@ const rankColors = {
 
 export default function UserTable({ users = [], sortField, sortOrder, onSort, page = 1, totalPages = 1, onPageChange, onDelete }) {
   const navigate = useNavigate();
-  const { t } = useAdminLanguage();
+  const { t, label } = useAdminLanguage();
 
   const SortHeader = ({ field, children }) => (
     <button
@@ -86,7 +86,7 @@ export default function UserTable({ users = [], sortField, sortOrder, onSort, pa
                   </td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${rankColors[user.current_rank] || rankColors.Guest}`}>
-                      {user.current_rank || 'Guest'}
+                      {label(user.current_rank || 'Guest')}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-700 font-medium">#{user.leaderboard_rank ?? '—'}</td>

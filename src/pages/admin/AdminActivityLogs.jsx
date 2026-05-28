@@ -38,11 +38,11 @@ export default function AdminActivityLogs() {
       setTotalPages(res.data?.total_pages || 1);
     } catch {
       setLogs([]);
-      setError('Unable to fetch activity logs. Make sure the API is connected.');
+      setError(t('fetchActivityLogsError'));
     } finally {
       setLoading(false);
     }
-  }, [page, filter, dateFilter]);
+  }, [page, filter, dateFilter, t]);
 
   useEffect(() => {
     fetchLogs();

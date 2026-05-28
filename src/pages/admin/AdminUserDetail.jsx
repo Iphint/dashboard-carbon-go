@@ -42,7 +42,7 @@ const LOG_FILTERS = [
 export default function AdminUserDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useAdminLanguage();
+  const { t, label } = useAdminLanguage();
   const [activeTab, setActiveTab] = useState('overview');
 
   // User data
@@ -82,11 +82,11 @@ export default function AdminUserDetail() {
       setUser(res.data);
     } catch {
       setUser(null);
-      setUserError('Unable to fetch user details.');
+      setUserError(t('fetchUserDetailError'));
     } finally {
       setUserLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   // Fetch activity logs
   const fetchLogs = useCallback(async () => {
@@ -98,11 +98,11 @@ export default function AdminUserDetail() {
       setLogTotalPages(res.data?.total_pages || 1);
     } catch {
       setLogs([]);
-      setLogsError('Unable to fetch activity logs.');
+      setLogsError(t('fetchActivityLogsError'));
     } finally {
       setLogsLoading(false);
     }
-  }, [id, logPage, logFilter]);
+  }, [id, logPage, logFilter, t]);
 
   // Fetch green actions
   const fetchGreenActions = useCallback(async () => {
@@ -113,11 +113,11 @@ export default function AdminUserDetail() {
       setGreenActions(res.data?.actions || res.data || []);
     } catch {
       setGreenActions([]);
-      setGreenError('Unable to fetch custom green actions.');
+      setGreenError(t('fetchCustomGreenError'));
     } finally {
       setGreenLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   // Fetch progress
   const fetchProgress = useCallback(async () => {
@@ -128,11 +128,11 @@ export default function AdminUserDetail() {
       setProgress(res.data);
     } catch {
       setProgress(null);
-      setProgressError('Unable to fetch progress data.');
+      setProgressError(t('fetchProgressError'));
     } finally {
       setProgressLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   // Fetch rank logs
   const fetchRankLogs = useCallback(async () => {
@@ -143,11 +143,11 @@ export default function AdminUserDetail() {
       setRankLogs(res.data?.logs || res.data || []);
     } catch {
       setRankLogs([]);
-      setRankError('Unable to fetch rank logs.');
+      setRankError(t('fetchRankLogsError'));
     } finally {
       setRankLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     fetchUser();
@@ -199,7 +199,7 @@ export default function AdminUserDetail() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <h2 className="text-xl font-bold text-gray-900">{user.username}</h2>
                   <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${rankColors[user.current_rank] || rankColors.Guest}`}>
-                    {user.current_rank || 'Guest'}
+                    {label(user.current_rank || 'Guest')}
                   </span>
                   {user.role === 'admin' && (
                     <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-700">{t('admin')}</span>
@@ -222,8 +222,8 @@ export default function AdminUserDetail() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               <InfoItem icon={Hash} label={t('userId')} value={user.id} />
               <InfoItem icon={User} label={t('username')} value={user.username} />
-              <InfoItem icon={Mail} label="Email" value={user.email} />
-              <InfoItem icon={Shield} label={t('role')} value={user.role || 'user'} />
+              <InfoItem icon={Mail} label={t('email')} value={user.email} />
+              <InfoItem icon={Shield} label={t('role')} value={label(user.role || 'user')} />
               <InfoItem icon={Calendar} label={t('registered')} value={user.created_at ? new Date(user.created_at).toLocaleDateString('id-ID') : '—'} />
               <InfoItem icon={Clock} label={t('lastLogin')} value={user.last_login ? new Date(user.last_login).toLocaleString('id-ID') : '—'} />
             </div>
@@ -265,7 +265,7 @@ export default function AdminUserDetail() {
             <StatCard title={t('questsDone')} value={user.total_quests_completed ?? '—'} icon={Sword} color="indigo" />
             <StatCard title={t('badgesEarned')} value={user.total_badges_earned ?? '—'} icon={Award} color="amber" />
             <StatCard title={t('milestones')} value={user.total_milestones_completed ?? '—'} icon={Target} color="pink" />
-            <StatCard title={t('currentRank')} value={user.current_rank || 'Guest'} icon={Shield} color="blue" />
+            <StatCard title={t('currentRank')} value={label(user.current_rank || 'Guest')} icon={Shield} color="blue" />
             <StatCard title={t('lbPosition')} value={user.leaderboard_position ? `#${user.leaderboard_position}` : '—'} icon={Trophy} color="amber" />
           </div>
 
@@ -300,7 +300,7 @@ export default function AdminUserDetail() {
                     <p className="text-gray-500">{user.email}</p>
                     <div className="flex items-center justify-center gap-2 mt-3">
                       <span className={`inline-flex px-3 py-1 text-sm font-medium rounded-full ${rankColors[user.current_rank] || rankColors.Guest}`}>
-                        {user.current_rank || 'Guest'}
+                        {label(user.current_rank || 'Guest')}
                       </span>
                       {user.leaderboard_position && (
                         <span className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full bg-amber-100 text-amber-700">
@@ -384,7 +384,7 @@ export default function AdminUserDetail() {
                               <div className="flex flex-wrap gap-2 mt-3">
                                 {action.category && (
                                   <span className="inline-flex px-2 py-0.5 text-[11px] font-medium rounded-full bg-blue-100 text-blue-700">
-                                    {action.category}
+                                    {label(action.category)}
                                   </span>
                                 )}
                                 {action.eco_point != null && (

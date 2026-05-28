@@ -63,7 +63,7 @@ export default function AdminEcoBadges() {
       closeForm();
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to save eco badge.');
+      setError(err.response?.data?.message || t('saveEcoBadgeError'));
     } finally {
       setSaving(false);
     }

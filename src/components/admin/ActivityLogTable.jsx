@@ -16,7 +16,7 @@ const sourceStyles = {
 };
 
 export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, onPageChange, onDelete }) {
-  const { t } = useAdminLanguage();
+  const { t, label } = useAdminLanguage();
 
   if (!logs.length) {
     return <EmptyState title={t('noActivityLogs')} description={t('noActivityLogsDesc')} />;
@@ -49,11 +49,11 @@ export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, 
                 <td className="px-4 py-3 font-medium text-gray-900">{log.name || '—'}</td>
                 <td className="px-4 py-3">
                   <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${typeStyles[log.type] || 'bg-blue-50 text-blue-700'}`}>
-                    {log.type || '—'}
+                    {label(log.type)}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-gray-700">{log.unit ?? '—'}</td>
-                <td className="px-4 py-3 text-gray-600">{log.category || '—'}</td>
+                <td className="px-4 py-3 text-gray-600">{label(log.category)}</td>
                 <td className="px-4 py-3 font-medium text-gray-700">{log.eco_point ?? '—'}</td>
                 <td className="px-4 py-3">
                   <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
@@ -68,7 +68,7 @@ export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, 
                 </td>
                 <td className="px-4 py-3">
                   <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${sourceStyles[log.source] || sourceStyles.default}`}>
-                    {log.source || 'default'}
+                    {label(log.source || 'default')}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-gray-500 text-xs max-w-[200px] truncate">{log.description || '—'}</td>

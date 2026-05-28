@@ -43,6 +43,7 @@ const translations = {
     badActions: 'Bad Actions',
     neutralNoSpecial: 'Neutral / No Special',
     customGreen: 'Custom Green',
+    custom: 'Custom',
     default: 'Default',
     date: 'Date',
     activity: 'Activity',
@@ -85,6 +86,7 @@ const translations = {
     ecoBadgesEarned: 'Eco Badges Earned',
     milestonesCompleted: 'Milestones Completed',
     username: 'Username',
+    email: 'Email',
     password: 'Password',
     signIn: 'Sign In to Admin',
     signingIn: 'Signing in...',
@@ -174,6 +176,22 @@ const translations = {
     fetchEcoBadgesError: 'Unable to fetch eco badges. Make sure the API is connected.',
     fetchMilestonesError: 'Unable to fetch milestones. Make sure the API is connected.',
     fetchCustomGreenError: 'Unable to fetch custom green actions. Make sure the API is connected.',
+    fetchQuestsError: 'Unable to fetch quests. Make sure the API is connected.',
+    fetchActivityLogsError: 'Unable to fetch activity logs. Make sure the API is connected.',
+    fetchUserDetailError: 'Unable to fetch user details.',
+    fetchProgressError: 'Unable to fetch progress data.',
+    fetchRankLogsError: 'Unable to fetch rank logs.',
+    saveMilestoneError: 'Unable to save milestone.',
+    saveEcoBadgeError: 'Unable to save eco badge.',
+    saveCustomGreenError: 'Unable to save custom green action.',
+    saveQuestError: 'Unable to save quest.',
+    transportation: 'Transportation',
+    waste: 'Waste',
+    consumption: 'Consumption',
+    energy: 'Energy',
+    environment: 'Environment',
+    school: 'School',
+    homeCategory: 'Home',
   },
   id: {
     managePlatform: 'Kelola platform eco kamu',
@@ -217,6 +235,7 @@ const translations = {
     badActions: 'Aksi Buruk',
     neutralNoSpecial: 'Netral / Tidak Khusus',
     customGreen: 'Aksi Hijau Custom',
+    custom: 'Custom',
     default: 'Default',
     date: 'Tanggal',
     activity: 'Aktivitas',
@@ -259,6 +278,7 @@ const translations = {
     ecoBadgesEarned: 'Eco Badge Didapat',
     milestonesCompleted: 'Milestone Selesai',
     username: 'Username',
+    email: 'Email',
     password: 'Password',
     signIn: 'Masuk ke Admin',
     signingIn: 'Sedang masuk...',
@@ -348,13 +368,29 @@ const translations = {
     fetchEcoBadgesError: 'Tidak bisa mengambil data eco badge. Pastikan API terhubung.',
     fetchMilestonesError: 'Tidak bisa mengambil data milestone. Pastikan API terhubung.',
     fetchCustomGreenError: 'Tidak bisa mengambil data aksi hijau custom. Pastikan API terhubung.',
+    fetchQuestsError: 'Tidak bisa mengambil data misi. Pastikan API terhubung.',
+    fetchActivityLogsError: 'Tidak bisa mengambil log aktivitas. Pastikan API terhubung.',
+    fetchUserDetailError: 'Tidak bisa mengambil detail user.',
+    fetchProgressError: 'Tidak bisa mengambil data progress.',
+    fetchRankLogsError: 'Tidak bisa mengambil log rank.',
+    saveMilestoneError: 'Tidak bisa menyimpan milestone.',
+    saveEcoBadgeError: 'Tidak bisa menyimpan eco badge.',
+    saveCustomGreenError: 'Tidak bisa menyimpan aksi hijau custom.',
+    saveQuestError: 'Tidak bisa menyimpan misi.',
+    transportation: 'Transportasi',
+    waste: 'Sampah',
+    consumption: 'Konsumsi',
+    energy: 'Energi',
+    environment: 'Lingkungan',
+    school: 'Sekolah',
+    homeCategory: 'Rumah',
   },
 };
 
 const LanguageContext = createContext(null);
 
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState(() => localStorage.getItem('admin_language') || 'en');
+  const [language, setLanguage] = useState(() => localStorage.getItem('admin_language') || 'id');
 
   const value = useMemo(() => ({
     language,
@@ -368,6 +404,12 @@ export function LanguageProvider({ children }) {
         text = text.replace(`{${name}}`, value);
       });
       return text;
+    },
+    label: (value, fallback = '—') => {
+      if (value === null || value === undefined || value === '') return fallback;
+      const key = String(value).trim().replace(/\s+/g, '').replace(/^[A-Z]/, (char) => char.toLowerCase());
+      const lowerKey = String(value).trim().toLowerCase().replace(/\s+/g, '');
+      return translations[language]?.[key] || translations[language]?.[lowerKey] || translations.en[key] || value;
     },
   }), [language]);
 

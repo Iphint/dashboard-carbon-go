@@ -25,7 +25,7 @@ export default function AdminHeader({ title, onMenuClick }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-1 rounded-xl bg-gray-100 p-1">
+          <div className="flex items-center gap-1 rounded-xl bg-gray-100 p-1">
             {['en', 'id'].map((item) => (
               <button
                 key={item}

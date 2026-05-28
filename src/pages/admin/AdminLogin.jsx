@@ -6,7 +6,7 @@ import { useAdminLanguage } from '../../context/LanguageContext';
 
 export default function AdminLogin() {
   const { user, loading, login } = useAuth();
-  const { t } = useAdminLanguage();
+  const { language, setLanguage, t } = useAdminLanguage();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: '', password: '' });
   const [submitting, setSubmitting] = useState(false);
@@ -33,6 +33,20 @@ export default function AdminLogin() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-lime-50 flex items-center justify-center p-4">
+      <div className="fixed right-4 top-4 flex items-center gap-1 rounded-xl bg-white/85 border border-emerald-100 p-1 shadow-sm">
+        {['en', 'id'].map((item) => (
+          <button
+            key={item}
+            type="button"
+            onClick={() => setLanguage(item)}
+            className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors ${
+              language === item ? 'bg-emerald-600 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            {item.toUpperCase()}
+          </button>
+        ))}
+      </div>
       <section className="w-full max-w-md bg-white border border-emerald-100 rounded-3xl shadow-xl shadow-emerald-100/60 p-8">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-200 mb-5">
           <Leaf className="w-7 h-7 text-white" />

@@ -21,11 +21,11 @@ export default function AdminRankLogs() {
       setLogs(res.data?.logs || res.data || []);
     } catch {
       setLogs([]);
-      setError('Unable to fetch rank logs. Make sure the API is connected.');
+      setError(t('fetchRankLogsError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();

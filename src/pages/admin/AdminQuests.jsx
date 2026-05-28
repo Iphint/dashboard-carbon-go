@@ -38,11 +38,11 @@ export default function AdminQuests() {
       setQuests(res.data?.quests || res.data || []);
     } catch {
       setQuests([]);
-      setError('Unable to fetch quests. Make sure the API is connected.');
+      setError(t('fetchQuestsError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();
@@ -78,7 +78,7 @@ export default function AdminQuests() {
       closeForm();
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to save quest.');
+      setError(err.response?.data?.message || t('saveQuestError'));
     } finally {
       setSaving(false);
     }

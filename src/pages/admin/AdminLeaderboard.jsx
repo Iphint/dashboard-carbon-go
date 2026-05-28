@@ -16,7 +16,7 @@ const rankColors = {
 const positionColors = ['', 'bg-amber-400', 'bg-gray-400', 'bg-amber-600'];
 
 export default function AdminLeaderboard() {
-  const { t } = useAdminLanguage();
+  const { t, label } = useAdminLanguage();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,7 +67,7 @@ export default function AdminLeaderboard() {
               <span className="text-xs text-gray-400">{t('pts')}</span>
             </div>
             <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full mt-2 ${rankColors[user.current_rank] || rankColors.Guest}`}>
-              {user.current_rank || 'Guest'}
+              {label(user.current_rank || 'Guest')}
             </span>
           </div>
         ))}
@@ -115,7 +115,7 @@ export default function AdminLeaderboard() {
                     <td className="px-4 py-3 font-bold text-gray-900">{user.eco_score ?? user.total_score ?? '—'}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${rankColors[user.current_rank] || rankColors.Guest}`}>
-                        {user.current_rank || 'Guest'}
+                        {label(user.current_rank || 'Guest')}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-emerald-600 font-medium">{user.good_actions ?? '—'}</td>

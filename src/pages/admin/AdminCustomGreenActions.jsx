@@ -75,7 +75,7 @@ export default function AdminCustomGreenActions() {
       closeForm();
       fetchData();
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to save custom green action.');
+      setError(err.response?.data?.message || t('saveCustomGreenError'));
     } finally {
       setSaving(false);
     }
