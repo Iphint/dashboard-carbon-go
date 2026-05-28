@@ -1,5 +1,6 @@
 import { Target, Award, Sword, CheckCircle2, Lock, Calendar } from 'lucide-react';
 import EmptyState from './EmptyState';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 function ProgressBar({ value = 0, max = 100, color = 'emerald' }) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
@@ -21,6 +22,7 @@ function ProgressBar({ value = 0, max = 100, color = 'emerald' }) {
 }
 
 function MilestoneCard({ milestone }) {
+  const { t } = useAdminLanguage();
   const achieved = milestone.achieved;
   return (
     <div className={`rounded-xl border p-4 transition-all duration-200 ${
@@ -38,7 +40,7 @@ function MilestoneCard({ milestone }) {
           <p className={`font-medium text-sm ${achieved ? 'text-emerald-800' : 'text-gray-700'}`}>
             {milestone.name}
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">{milestone.description || 'Complete this milestone'}</p>
+          <p className="text-xs text-gray-400 mt-0.5">{milestone.description || t('milestoneDescFallback')}</p>
           {achieved && milestone.achieved_at && (
             <div className="flex items-center gap-1 mt-2 text-xs text-emerald-600">
               <Calendar className="w-3 h-3" />
@@ -58,6 +60,7 @@ function MilestoneCard({ milestone }) {
 }
 
 function BadgeCard({ badge }) {
+  const { t } = useAdminLanguage();
   const achieved = badge.achieved;
   return (
     <div className={`rounded-xl border p-4 text-center transition-all duration-200 ${
@@ -73,7 +76,7 @@ function BadgeCard({ badge }) {
       <p className={`font-medium text-sm ${achieved ? 'text-amber-800' : 'text-gray-600'}`}>
         {badge.name}
       </p>
-      <p className="text-xs text-gray-400 mt-0.5">{badge.requirement || 'Meet the requirements'}</p>
+      <p className="text-xs text-gray-400 mt-0.5">{badge.requirement || t('badgeDescFallback')}</p>
       {achieved && badge.achieved_at && (
         <div className="flex items-center justify-center gap-1 mt-2 text-xs text-amber-600">
           <Calendar className="w-3 h-3" />
@@ -85,9 +88,10 @@ function BadgeCard({ badge }) {
 }
 
 function QuestCard({ quest }) {
+  const { t } = useAdminLanguage();
   const completed = quest.completed;
   const statusColor = completed ? 'emerald' : quest.active ? 'blue' : 'gray';
-  const statusText = completed ? 'Completed' : quest.active ? 'Active' : 'Not Started';
+  const statusText = completed ? t('complete') : quest.active ? t('active') : t('notStarted');
 
   return (
     <div className={`rounded-xl border p-4 transition-all duration-200 hover:shadow-md ${
@@ -110,7 +114,7 @@ function QuestCard({ quest }) {
               {statusText}
             </span>
           </div>
-          <p className="text-xs text-gray-400">{quest.description || 'Complete this quest'}</p>
+          <p className="text-xs text-gray-400">{quest.description || t('completeThisQuest')}</p>
           {quest.progress !== undefined && !completed && (
             <div className="mt-2">
               <ProgressBar value={quest.progress} max={quest.target || 100} color={statusColor} />
@@ -130,13 +134,14 @@ function QuestCard({ quest }) {
 }
 
 export default function ProgressSection({ milestones = [], badges = [], quests = [] }) {
+  const { t } = useAdminLanguage();
   return (
     <div className="space-y-8">
       {/* Milestones */}
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Target className="w-5 h-5 text-emerald-600" />
-          <h3 className="text-lg font-bold text-gray-900">Milestones</h3>
+          <h3 className="text-lg font-bold text-gray-900">{t('milestones')}</h3>
           <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
             {milestones.filter(m => m.achieved).length}/{milestones.length}
           </span>
@@ -146,7 +151,7 @@ export default function ProgressSection({ milestones = [], badges = [], quests =
             {milestones.map((m, i) => <MilestoneCard key={m.id || i} milestone={m} />)}
           </div>
         ) : (
-          <EmptyState title="No Milestones" description="No milestones data available." icon={Target} />
+          <EmptyState title={t('noMilestones')} description={t('noMilestonesDesc')} icon={Target} />
         )}
       </div>
 
@@ -154,7 +159,7 @@ export default function ProgressSection({ milestones = [], badges = [], quests =
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Award className="w-5 h-5 text-amber-600" />
-          <h3 className="text-lg font-bold text-gray-900">Eco Badges</h3>
+          <h3 className="text-lg font-bold text-gray-900">{t('ecoBadges')}</h3>
           <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
             {badges.filter(b => b.achieved).length}/{badges.length}
           </span>
@@ -164,7 +169,7 @@ export default function ProgressSection({ milestones = [], badges = [], quests =
             {badges.map((b, i) => <BadgeCard key={b.id || i} badge={b} />)}
           </div>
         ) : (
-          <EmptyState title="No Badges" description="No badges data available." icon={Award} />
+          <EmptyState title={t('noEcoBadges')} description={t('noEcoBadgesDesc')} icon={Award} />
         )}
       </div>
 
@@ -172,7 +177,7 @@ export default function ProgressSection({ milestones = [], badges = [], quests =
       <div>
         <div className="flex items-center gap-2 mb-4">
           <Sword className="w-5 h-5 text-blue-600" />
-          <h3 className="text-lg font-bold text-gray-900">Quests</h3>
+          <h3 className="text-lg font-bold text-gray-900">{t('quests')}</h3>
           <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
             {quests.filter(q => q.completed).length}/{quests.length}
           </span>
@@ -182,7 +187,7 @@ export default function ProgressSection({ milestones = [], badges = [], quests =
             {quests.map((q, i) => <QuestCard key={q.id || i} quest={q} />)}
           </div>
         ) : (
-          <EmptyState title="No Quests" description="No quests data available." icon={Sword} />
+          <EmptyState title={t('noQuests')} description={t('noQuestsDesc')} icon={Sword} />
         )}
       </div>
     </div>

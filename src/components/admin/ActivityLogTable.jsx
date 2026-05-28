@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import EmptyState from './EmptyState';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const typeStyles = {
   good: 'bg-emerald-50 text-emerald-700',
@@ -15,8 +16,10 @@ const sourceStyles = {
 };
 
 export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, onPageChange, onDelete }) {
+  const { t } = useAdminLanguage();
+
   if (!logs.length) {
-    return <EmptyState title="No Activity Logs" description="No activity logs found for the current filters." />;
+    return <EmptyState title={t('noActivityLogs')} description={t('noActivityLogsDesc')} />;
   }
 
   return (
@@ -25,16 +28,16 @@ export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, 
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Activity</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Unit</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Eco Point</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Source</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Description</th>
-              {onDelete && <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>}
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('date')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('activity')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('type')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('unit')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('category')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('ecoPoint')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('status')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('source')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('description')}</th>
+              {onDelete && <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('action')}</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -60,7 +63,7 @@ export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, 
                         ? 'bg-emerald-100 text-emerald-700'
                         : 'bg-red-100 text-red-700'
                   }`}>
-                    {log.type === 'neutral' ? 'Neutral' : log.is_good ? 'Good' : 'Bad'}
+                    {log.type === 'neutral' ? t('neutral') : log.is_good ? t('good') : t('bad')}
                   </span>
                 </td>
                 <td className="px-4 py-3">
@@ -77,7 +80,7 @@ export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, 
                       className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-xs font-medium"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      Delete
+                      {t('delete')}
                     </button>
                   </td>
                 )}
@@ -89,7 +92,7 @@ export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, 
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-          <p className="text-sm text-gray-500">Page {page} of {totalPages}</p>
+          <p className="text-sm text-gray-500">{t('pageOf', { page, total: totalPages })}</p>
           <div className="flex items-center gap-1">
             <button
               onClick={() => onPageChange?.(page - 1)}

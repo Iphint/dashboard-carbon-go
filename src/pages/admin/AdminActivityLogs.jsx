@@ -4,17 +4,19 @@ import ActivityLogTable from '../../components/admin/ActivityLogTable';
 import { TableSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
 import { deleteActivityLog, getActivityLogs } from '../../services/adminApi';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const FILTERS = [
-  { label: 'All', value: 'all' },
-  { label: 'Good Actions', value: 'good' },
-  { label: 'Bad Actions', value: 'bad' },
-  { label: 'Neutral / No Special', value: 'neutral' },
-  { label: 'Custom Green', value: 'custom' },
-  { label: 'Default', value: 'default' },
+  { labelKey: 'all', value: 'all' },
+  { labelKey: 'goodActions', value: 'good' },
+  { labelKey: 'badActions', value: 'bad' },
+  { labelKey: 'neutralNoSpecial', value: 'neutral' },
+  { labelKey: 'customGreen', value: 'custom' },
+  { labelKey: 'default', value: 'default' },
 ];
 
 export default function AdminActivityLogs() {
+  const { t } = useAdminLanguage();
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,7 +70,7 @@ export default function AdminActivityLogs() {
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {f.label}
+                {t(f.labelKey)}
               </button>
             ))}
           </div>

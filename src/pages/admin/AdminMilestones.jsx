@@ -4,10 +4,12 @@ import { CardSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
 import EmptyState from '../../components/admin/EmptyState';
 import { createMilestone, deleteMilestone, getMilestones, updateMilestone } from '../../services/adminApi';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const emptyForm = { name: '', description: '', target_value: '' };
 
 export default function AdminMilestones() {
+  const { t } = useAdminLanguage();
   const [milestones, setMilestones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -24,11 +26,11 @@ export default function AdminMilestones() {
       setMilestones(res.data?.milestones || res.data || []);
     } catch {
       setMilestones([]);
-      setError('Unable to fetch milestones. Make sure the API is connected.');
+      setError(t('fetchMilestonesError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();
@@ -75,24 +77,24 @@ export default function AdminMilestones() {
       <div className="flex justify-end">
         <button onClick={() => openForm()} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
           <Plus className="w-4 h-4" />
-          Add Milestone
+          {t('addMilestone')}
         </button>
       </div>
 
       {formOpen && (
         <form onSubmit={save} className="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
-          <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required type="number" min="0" placeholder="Target CU" value={form.target_value} onChange={(e) => setForm({ ...form, target_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required type="number" min="0" placeholder={t('targetCu')} value={form.target_value} onChange={(e) => setForm({ ...form, target_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
           <div className="flex gap-2">
-            <button disabled={saving} className="flex-1 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60">{saving ? 'Saving...' : editing ? 'Update' : 'Create'}</button>
+            <button disabled={saving} className="flex-1 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60">{saving ? t('saving') : editing ? t('update') : t('create')}</button>
             <button type="button" onClick={closeForm} className="px-3 rounded-xl bg-gray-100 text-gray-600"><X className="w-4 h-4" /></button>
           </div>
         </form>
       )}
 
       {loading ? <CardSkeleton count={6} /> : error ? <ErrorState message={error} onRetry={fetchData} /> : !milestones.length ? (
-        <EmptyState title="No Milestones" description="No milestones data available." icon={Target} />
+        <EmptyState title={t('noMilestones')} description={t('noMilestonesDesc')} icon={Target} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {milestones.map((m, i) => (
@@ -109,8 +111,8 @@ export default function AdminMilestones() {
                       <button onClick={() => remove(m.id)} className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-500 mt-0.5">{m.description || 'Complete this milestone'}</p>
-                  <p className="text-xs text-gray-400 mt-2">Target: {m.target || m.target_value || 0} CU · Achieved by {m.achieved_count || 0} users</p>
+                  <p className="text-sm text-gray-500 mt-0.5">{m.description || t('completeThisMilestone')}</p>
+                  <p className="text-xs text-gray-400 mt-2">{t('target')}: {m.target || m.target_value || 0} CU · {t('achievedBy')} {m.achieved_count || 0} {t('users')}</p>
                   {m.achieved && m.achieved_at && (
                     <div className="flex items-center gap-1 mt-2 text-xs text-emerald-600">
                       <Calendar className="w-3 h-3" />

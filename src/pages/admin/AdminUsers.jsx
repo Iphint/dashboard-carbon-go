@@ -4,11 +4,13 @@ import UserTable from '../../components/admin/UserTable';
 import { TableSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
 import { deleteUser, getUsers } from '../../services/adminApi';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const RANKS = ['All', 'Guest', 'Explorer', 'Guardian', 'Hero'];
 const ONBOARDING = ['All', 'Complete', 'Pending'];
 
 export default function AdminUsers() {
+  const { t } = useAdminLanguage();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -38,11 +40,11 @@ export default function AdminUsers() {
       setTotalPages(response.data?.total_pages || 1);
     } catch {
       setUsers([]);
-      setError('Unable to fetch users. Make sure the API is connected.');
+      setError(t('fetchUsersError'));
     } finally {
       setLoading(false);
     }
-  }, [page, search, rankFilter, onboardingFilter, sortField, sortOrder]);
+  }, [page, search, rankFilter, onboardingFilter, sortField, sortOrder, t]);
 
   useEffect(() => {
     const debounce = setTimeout(() => {
@@ -86,7 +88,7 @@ export default function AdminUsers() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search username or email..."
+              placeholder={t('searchUsers')}
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
@@ -103,7 +105,7 @@ export default function AdminUsers() {
             }`}
           >
             <Filter className="w-4 h-4" />
-            Filters
+            {t('filters')}
             {hasActiveFilters && (
               <span className="w-5 h-5 bg-emerald-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                 {[search, rankFilter !== 'All', onboardingFilter !== 'All'].filter(Boolean).length}
@@ -117,7 +119,7 @@ export default function AdminUsers() {
               className="inline-flex items-center gap-1 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
-              Clear
+              {t('clear')}
             </button>
           )}
         </div>
@@ -127,7 +129,7 @@ export default function AdminUsers() {
           <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t border-gray-100">
             {/* Rank filter */}
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-1.5 block">Rank</label>
+              <label className="text-xs font-medium text-gray-500 mb-1.5 block">{t('rank')}</label>
               <div className="flex gap-1">
                 {RANKS.map((rank) => (
                   <button
@@ -139,7 +141,7 @@ export default function AdminUsers() {
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    {rank}
+                    {rank === 'All' ? t('all') : t(rank.toLowerCase())}
                   </button>
                 ))}
               </div>
@@ -147,7 +149,7 @@ export default function AdminUsers() {
 
             {/* Onboarding filter */}
             <div>
-              <label className="text-xs font-medium text-gray-500 mb-1.5 block">Onboarding</label>
+              <label className="text-xs font-medium text-gray-500 mb-1.5 block">{t('onboarding')}</label>
               <div className="flex gap-1">
                 {ONBOARDING.map((status) => (
                   <button
@@ -159,7 +161,7 @@ export default function AdminUsers() {
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                     }`}
                   >
-                    {status}
+                    {status === 'All' ? t('all') : status === 'Complete' ? t('complete') : t('pending')}
                   </button>
                 ))}
               </div>

@@ -2,10 +2,10 @@ import { Shield, Lock, Calendar, ChevronRight } from 'lucide-react';
 import { useAdminLanguage } from '../../context/LanguageContext';
 
 const RANKS = [
-  { name: 'Guest', color: 'gray', icon: '🌱', description: 'Starting your eco journey' },
-  { name: 'Explorer', color: 'blue', icon: '🔍', description: 'Exploring green actions' },
-  { name: 'Guardian', color: 'emerald', icon: '🛡️', description: 'Guarding the environment' },
-  { name: 'Hero', color: 'amber', icon: '⭐', description: 'Eco Hero status achieved' },
+  { name: 'Guest', labelKey: 'guest', color: 'gray', icon: '🌱', descriptionKey: 'guestDesc' },
+  { name: 'Explorer', labelKey: 'explorer', color: 'blue', icon: '🔍', descriptionKey: 'explorerDesc' },
+  { name: 'Guardian', labelKey: 'guardian', color: 'emerald', icon: '🛡️', descriptionKey: 'guardianDesc' },
+  { name: 'Hero', labelKey: 'hero', color: 'amber', icon: '⭐', descriptionKey: 'heroDesc' },
 ];
 
 const colorMap = {
@@ -59,7 +59,7 @@ export default function RankTimeline({ rankLogs = [], summary = false }) {
               <div className="pb-8 flex-1">
                 <div className="flex items-center gap-2">
                   <h4 className={`font-semibold text-sm ${achieved ? c.text : 'text-gray-400'}`}>
-                    {rank.name}
+                    {t(rank.labelKey)}
                   </h4>
                   {achieved && (
                     <span className={`inline-flex px-2 py-0.5 text-[10px] font-medium rounded-full ${c.bg} ${c.text}`}>
@@ -72,7 +72,7 @@ export default function RankTimeline({ rankLogs = [], summary = false }) {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-gray-400 mt-0.5">{rank.description}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{t(rank.descriptionKey)}</p>
                 {summary && (
                   <div className="flex items-center gap-1 mt-1.5 text-xs text-gray-500">
                     <ChevronRight className="w-3 h-3" />

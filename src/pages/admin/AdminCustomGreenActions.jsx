@@ -9,10 +9,12 @@ import {
   getCustomGreenActions,
   updateCustomGreenAction,
 } from '../../services/adminApi';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const emptyForm = { user_id: '', name: '', description: '' };
 
 export default function AdminCustomGreenActions() {
+  const { t } = useAdminLanguage();
   const [actions, setActions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -29,11 +31,11 @@ export default function AdminCustomGreenActions() {
       setActions(res.data?.actions || res.data || []);
     } catch {
       setActions([]);
-      setError('Unable to fetch custom green actions. Make sure the API is connected.');
+      setError(t('fetchCustomGreenError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();
@@ -89,17 +91,17 @@ export default function AdminCustomGreenActions() {
       <div className="flex justify-end">
         <button onClick={openCreate} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
           <Plus className="w-4 h-4" />
-          Add Custom Action
+          {t('addCustomAction')}
         </button>
       </div>
 
       {formOpen && (
         <form onSubmit={save} className="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
-          <input required type="number" min="1" placeholder="User ID" value={form.user_id} onChange={(e) => setForm({ ...form, user_id: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required placeholder="Action name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-1" />
-          <input placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required type="number" min="1" placeholder={t('userId')} value={form.user_id} onChange={(e) => setForm({ ...form, user_id: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required placeholder={t('actionName')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-1" />
+          <input placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
           <div className="flex gap-2">
-            <button disabled={saving} className="flex-1 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60">{saving ? 'Saving...' : editing ? 'Update' : 'Create'}</button>
+            <button disabled={saving} className="flex-1 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60">{saving ? t('saving') : editing ? t('update') : t('create')}</button>
             <button type="button" onClick={closeForm} className="px-3 rounded-xl bg-gray-100 text-gray-600">
               <X className="w-4 h-4" />
             </button>
@@ -108,7 +110,7 @@ export default function AdminCustomGreenActions() {
       )}
 
       {loading ? <CardSkeleton count={6} /> : error ? <ErrorState message={error} onRetry={fetchData} /> : !actions.length ? (
-        <EmptyState title="No Custom Green Actions" description="No custom green actions have been created yet." icon={Leaf} />
+        <EmptyState title={t('noCustomGreenActions')} description={t('noCustomGreenActionsDesc')} icon={Leaf} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {actions.map((action, i) => (

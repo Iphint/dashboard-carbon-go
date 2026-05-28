@@ -4,6 +4,7 @@ import { TableSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
 import EmptyState from '../../components/admin/EmptyState';
 import { getLeaderboard } from '../../services/adminApi';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const rankColors = {
   Guest: 'bg-gray-100 text-gray-700',
@@ -15,6 +16,7 @@ const rankColors = {
 const positionColors = ['', 'bg-amber-400', 'bg-gray-400', 'bg-amber-600'];
 
 export default function AdminLeaderboard() {
+  const { t } = useAdminLanguage();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,11 +29,11 @@ export default function AdminLeaderboard() {
       setData(res.data?.leaderboard || res.data || []);
     } catch {
       setData([]);
-      setError('Unable to fetch leaderboard. Make sure the API is connected.');
+      setError(t('fetchLeaderboardError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();
@@ -39,7 +41,7 @@ export default function AdminLeaderboard() {
 
   if (loading) return <TableSkeleton rows={10} cols={7} />;
   if (error) return <ErrorState message={error} onRetry={fetchData} />;
-  if (!data.length) return <EmptyState title="Leaderboard Empty" description="No leaderboard data available." icon={Trophy} />;
+  if (!data.length) return <EmptyState title={t('leaderboardEmpty')} description={t('leaderboardEmptyDesc')} icon={Trophy} />;
 
   return (
     <div className="space-y-6">
@@ -62,7 +64,7 @@ export default function AdminLeaderboard() {
             <div className="mt-3 flex items-center justify-center gap-2">
               <Trophy className="w-4 h-4 text-amber-500" />
               <span className="text-lg font-bold text-gray-900">{user.eco_score ?? user.total_score ?? '—'}</span>
-              <span className="text-xs text-gray-400">pts</span>
+              <span className="text-xs text-gray-400">{t('pts')}</span>
             </div>
             <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full mt-2 ${rankColors[user.current_rank] || rankColors.Guest}`}>
               {user.current_rank || 'Guest'}
@@ -78,11 +80,11 @@ export default function AdminLeaderboard() {
             <thead>
               <tr className="border-b border-gray-100 bg-gray-50/50">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-16">#</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Eco Score</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Rank</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Good Actions</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Eco Ratio</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('user')}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('ecoScore')}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('rank')}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('goodActions')}</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('ecoRatio')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">

@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Eye, ArrowUpDown, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import EmptyState from './EmptyState';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const rankColors = {
   Guest: 'bg-gray-100 text-gray-700',
@@ -11,6 +12,7 @@ const rankColors = {
 
 export default function UserTable({ users = [], sortField, sortOrder, onSort, page = 1, totalPages = 1, onPageChange, onDelete }) {
   const navigate = useNavigate();
+  const { t } = useAdminLanguage();
 
   const SortHeader = ({ field, children }) => (
     <button
@@ -23,7 +25,7 @@ export default function UserTable({ users = [], sortField, sortOrder, onSort, pa
   );
 
   if (!users.length) {
-    return <EmptyState title="No Users Found" description="No users match your current filters." />;
+    return <EmptyState title={t('noUsersFound')} description={t('noUsersFoundDesc')} />;
   }
 
   return (
@@ -32,17 +34,17 @@ export default function UserTable({ users = [], sortField, sortOrder, onSort, pa
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 bg-gray-50/50">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">User</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Onboarding</th>
-              <th className="px-4 py-3 text-left"><SortHeader field="total_unit">Unit</SortHeader></th>
-              <th className="px-4 py-3 text-left"><SortHeader field="total_activity">Activity</SortHeader></th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Good</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Bad</th>
-              <th className="px-4 py-3 text-left"><SortHeader field="eco_ratio">Eco Ratio</SortHeader></th>
-              <th className="px-4 py-3 text-left"><SortHeader field="rank">Rank</SortHeader></th>
-              <th className="px-4 py-3 text-left"><SortHeader field="leaderboard_rank">LB Rank</SortHeader></th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Joined</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Action</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('user')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('onboarding')}</th>
+              <th className="px-4 py-3 text-left"><SortHeader field="total_unit">{t('unit')}</SortHeader></th>
+              <th className="px-4 py-3 text-left"><SortHeader field="total_activity">{t('activity')}</SortHeader></th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('good')}</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('bad')}</th>
+              <th className="px-4 py-3 text-left"><SortHeader field="eco_ratio">{t('ecoRatio')}</SortHeader></th>
+              <th className="px-4 py-3 text-left"><SortHeader field="rank">{t('rank')}</SortHeader></th>
+              <th className="px-4 py-3 text-left"><SortHeader field="leaderboard_rank">{t('lbRank')}</SortHeader></th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('joined')}</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">{t('action')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -64,7 +66,7 @@ export default function UserTable({ users = [], sortField, sortOrder, onSort, pa
                         ? 'bg-emerald-100 text-emerald-700'
                         : 'bg-amber-100 text-amber-700'
                     }`}>
-                      {user.onboarding_complete ? 'Complete' : 'Pending'}
+                      {user.onboarding_complete ? t('complete') : t('pending')}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-gray-700 font-medium">{user.total_unit ?? '—'}</td>
@@ -97,7 +99,7 @@ export default function UserTable({ users = [], sortField, sortOrder, onSort, pa
                       className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5" />
-                      Detail
+                      {t('view')}
                     </button>
                     {onDelete && user.role !== 'admin' && (
                       <button
@@ -105,7 +107,7 @@ export default function UserTable({ users = [], sortField, sortOrder, onSort, pa
                         className="ml-1 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
-                        Delete
+                        {t('delete')}
                       </button>
                     )}
                   </td>
@@ -119,7 +121,7 @@ export default function UserTable({ users = [], sortField, sortOrder, onSort, pa
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-          <p className="text-sm text-gray-500">Page {page} of {totalPages}</p>
+          <p className="text-sm text-gray-500">{t('pageOf', { page, total: totalPages })}</p>
           <div className="flex items-center gap-1">
             <button
               onClick={() => onPageChange?.(page - 1)}

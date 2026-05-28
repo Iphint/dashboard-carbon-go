@@ -20,27 +20,29 @@ import {
   getUserProgress,
   getUserRankLogs,
 } from '../../services/adminApi';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const TABS = [
-  { id: 'overview', label: 'Overview', icon: User },
-  { id: 'activity', label: 'Activity Logs', icon: Activity },
-  { id: 'green-actions', label: 'Green Actions', icon: Leaf },
-  { id: 'progress', label: 'Progress', icon: Target },
-  { id: 'ranks', label: 'Rank History', icon: TrendingUp },
+  { id: 'overview', labelKey: 'overview', icon: User },
+  { id: 'activity', labelKey: 'activityLogs', icon: Activity },
+  { id: 'green-actions', labelKey: 'greenActions', icon: Leaf },
+  { id: 'progress', labelKey: 'progress', icon: Target },
+  { id: 'ranks', labelKey: 'rankHistory', icon: TrendingUp },
 ];
 
 const LOG_FILTERS = [
-  { label: 'All', value: 'all' },
-  { label: 'Good Actions', value: 'good' },
-  { label: 'Bad Actions', value: 'bad' },
-  { label: 'Neutral / No Special', value: 'neutral' },
-  { label: 'Custom', value: 'custom' },
-  { label: 'Default', value: 'default' },
+  { labelKey: 'all', value: 'all' },
+  { labelKey: 'goodActions', value: 'good' },
+  { labelKey: 'badActions', value: 'bad' },
+  { labelKey: 'neutralNoSpecial', value: 'neutral' },
+  { labelKey: 'customGreen', value: 'custom' },
+  { labelKey: 'default', value: 'default' },
 ];
 
 export default function AdminUserDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useAdminLanguage();
   const [activeTab, setActiveTab] = useState('overview');
 
   // User data
@@ -177,7 +179,7 @@ export default function AdminUserDetail() {
         className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to Users
+        {t('userManagement')}
       </button>
 
       {/* User Header */}
@@ -200,7 +202,7 @@ export default function AdminUserDetail() {
                     {user.current_rank || 'Guest'}
                   </span>
                   {user.role === 'admin' && (
-                    <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-700">Admin</span>
+                    <span className="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-700">{t('admin')}</span>
                   )}
                 </div>
                 <p className="text-sm text-gray-500 mt-0.5">{user.email}</p>
@@ -209,7 +211,7 @@ export default function AdminUserDetail() {
                 <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-xl border border-amber-100">
                   <Trophy className="w-5 h-5 text-amber-500" />
                   <div>
-                    <p className="text-[10px] text-amber-600 font-medium uppercase">Leaderboard</p>
+                    <p className="text-[10px] text-amber-600 font-medium uppercase">{t('leaderboard')}</p>
                     <p className="text-lg font-bold text-amber-700">#{user.leaderboard_position}</p>
                   </div>
                 </div>
@@ -218,12 +220,12 @@ export default function AdminUserDetail() {
 
             {/* Account Info Grid */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <InfoItem icon={Hash} label="User ID" value={user.id} />
-              <InfoItem icon={User} label="Username" value={user.username} />
+              <InfoItem icon={Hash} label={t('userId')} value={user.id} />
+              <InfoItem icon={User} label={t('username')} value={user.username} />
               <InfoItem icon={Mail} label="Email" value={user.email} />
-              <InfoItem icon={Shield} label="Role" value={user.role || 'user'} />
-              <InfoItem icon={Calendar} label="Registered" value={user.created_at ? new Date(user.created_at).toLocaleDateString('id-ID') : '—'} />
-              <InfoItem icon={Clock} label="Last Login" value={user.last_login ? new Date(user.last_login).toLocaleString('id-ID') : '—'} />
+              <InfoItem icon={Shield} label={t('role')} value={user.role || 'user'} />
+              <InfoItem icon={Calendar} label={t('registered')} value={user.created_at ? new Date(user.created_at).toLocaleDateString('id-ID') : '—'} />
+              <InfoItem icon={Clock} label={t('lastLogin')} value={user.last_login ? new Date(user.last_login).toLocaleString('id-ID') : '—'} />
             </div>
           </div>
 
@@ -231,40 +233,40 @@ export default function AdminUserDetail() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
               <ClipboardCheck className="w-4 h-4 text-blue-500" />
-              Onboarding Data
+              {t('onboarding')}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               <InfoItem
                 icon={CheckCircle}
-                label="Status"
+                label={t('status')}
                 value={
                   <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
                     user.onboarding_complete ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                   }`}>
-                    {user.onboarding_complete ? 'Complete' : 'Pending'}
+                    {user.onboarding_complete ? t('complete') : t('pending')}
                   </span>
                 }
               />
-              <InfoItem icon={Calendar} label="Completed At" value={user.onboarding_completed_at ? new Date(user.onboarding_completed_at).toLocaleDateString('id-ID') : '—'} />
-              <InfoItem icon={Activity} label="Last Step" value={user.onboarding_last_step ?? '—'} />
-              <InfoItem icon={BookOpen} label="Guidebook Viewed" value={user.guidebook_viewed ? 'Yes' : 'No'} />
-              <InfoItem icon={Calendar} label="Last Daily Survey" value={user.last_daily_survey ? new Date(user.last_daily_survey).toLocaleDateString('id-ID') : '—'} />
+              <InfoItem icon={Calendar} label={t('completedAt')} value={user.onboarding_completed_at ? new Date(user.onboarding_completed_at).toLocaleDateString('id-ID') : '—'} />
+              <InfoItem icon={Activity} label={t('lastStep')} value={user.onboarding_last_step ?? '—'} />
+              <InfoItem icon={BookOpen} label={t('guidebookViewed')} value={user.guidebook_viewed ? t('yes') : t('no')} />
+              <InfoItem icon={Calendar} label={t('lastDailySurvey')} value={user.last_daily_survey ? new Date(user.last_daily_survey).toLocaleDateString('id-ID') : '—'} />
             </div>
           </div>
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-            <StatCard title="Total Unit" value={user.total_unit ?? '—'} icon={Box} color="purple" />
-            <StatCard title="Total Activity" value={user.total_activity ?? '—'} icon={Activity} color="cyan" />
-            <StatCard title="Good Actions" value={user.good_actions ?? '—'} icon={ThumbsUp} color="emerald" />
-            <StatCard title="Bad Actions" value={user.bad_actions ?? '—'} icon={ThumbsDown} color="red" />
-            <StatCard title="Eco Ratio" value={`${ecoRatio}%`} icon={Percent} color="teal" />
-            <StatCard title="Custom Green" value={user.total_custom_green_actions ?? '—'} icon={Leaf} color="emerald" />
-            <StatCard title="Quests Done" value={user.total_quests_completed ?? '—'} icon={Sword} color="indigo" />
-            <StatCard title="Badges Earned" value={user.total_badges_earned ?? '—'} icon={Award} color="amber" />
-            <StatCard title="Milestones" value={user.total_milestones_completed ?? '—'} icon={Target} color="pink" />
-            <StatCard title="Current Rank" value={user.current_rank || 'Guest'} icon={Shield} color="blue" />
-            <StatCard title="LB Position" value={user.leaderboard_position ? `#${user.leaderboard_position}` : '—'} icon={Trophy} color="amber" />
+            <StatCard title={t('totalUnit')} value={user.total_unit ?? '—'} icon={Box} color="purple" />
+            <StatCard title={t('totalActivity')} value={user.total_activity ?? '—'} icon={Activity} color="cyan" />
+            <StatCard title={t('goodActions')} value={user.good_actions ?? '—'} icon={ThumbsUp} color="emerald" />
+            <StatCard title={t('badActions')} value={user.bad_actions ?? '—'} icon={ThumbsDown} color="red" />
+            <StatCard title={t('ecoRatio')} value={`${ecoRatio}%`} icon={Percent} color="teal" />
+            <StatCard title={t('customGreenShort')} value={user.total_custom_green_actions ?? '—'} icon={Leaf} color="emerald" />
+            <StatCard title={t('questsDone')} value={user.total_quests_completed ?? '—'} icon={Sword} color="indigo" />
+            <StatCard title={t('badgesEarned')} value={user.total_badges_earned ?? '—'} icon={Award} color="amber" />
+            <StatCard title={t('milestones')} value={user.total_milestones_completed ?? '—'} icon={Target} color="pink" />
+            <StatCard title={t('currentRank')} value={user.current_rank || 'Guest'} icon={Shield} color="blue" />
+            <StatCard title={t('lbPosition')} value={user.leaderboard_position ? `#${user.leaderboard_position}` : '—'} icon={Trophy} color="amber" />
           </div>
 
           {/* Tabs */}
@@ -281,7 +283,7 @@ export default function AdminUserDetail() {
                   }`}
                 >
                   <tab.icon className="w-4 h-4" />
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </button>
               ))}
             </div>
@@ -310,7 +312,7 @@ export default function AdminUserDetail() {
 
                     {/* Eco Ratio Visual */}
                     <div className="max-w-xs mx-auto mt-6">
-                      <p className="text-xs font-medium text-gray-500 mb-2">Eco Ratio</p>
+                      <p className="text-xs font-medium text-gray-500 mb-2">{t('ecoRatio')}</p>
                       <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-700"
@@ -318,7 +320,7 @@ export default function AdminUserDetail() {
                         />
                       </div>
                       <p className="text-2xl font-bold text-emerald-600 mt-2">{ecoRatio}%</p>
-                      <p className="text-xs text-gray-400">Good Actions / Total Activities</p>
+                      <p className="text-xs text-gray-400">{t('goodActions')} / {t('totalActivities')}</p>
                     </div>
                   </div>
                 </div>
@@ -339,7 +341,7 @@ export default function AdminUserDetail() {
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                         }`}
                       >
-                        {f.label}
+                        {t(f.labelKey)}
                       </button>
                     ))}
                   </div>
@@ -366,7 +368,7 @@ export default function AdminUserDetail() {
                   ) : greenError ? (
                     <ErrorState message={greenError} onRetry={fetchGreenActions} />
                   ) : greenActions.length === 0 ? (
-                    <EmptyState title="No Custom Green Actions" description="This user hasn't created any custom green actions yet." icon={Leaf} />
+                    <EmptyState title={t('noCustomGreenActions')} description={t('noUserCustomGreenDesc')} icon={Leaf} />
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {greenActions.map((action, i) => (
@@ -394,19 +396,19 @@ export default function AdminUserDetail() {
 
                               {action.feedback && (
                                 <div className="mt-3 p-2 bg-gray-50 rounded-lg">
-                                  <p className="text-[11px] font-medium text-gray-500 mb-0.5">System Feedback</p>
+                                  <p className="text-[11px] font-medium text-gray-500 mb-0.5">{t('systemFeedback')}</p>
                                   <p className="text-xs text-gray-700">{action.feedback}</p>
                                 </div>
                               )}
                               {action.recommendation && (
                                 <div className="mt-2 p-2 bg-emerald-50 rounded-lg">
-                                  <p className="text-[11px] font-medium text-emerald-600 mb-0.5">Recommendation</p>
+                                  <p className="text-[11px] font-medium text-emerald-600 mb-0.5">{t('recommendation')}</p>
                                   <p className="text-xs text-emerald-800">{action.recommendation}</p>
                                 </div>
                               )}
 
                               <p className="text-[11px] text-gray-400 mt-2">
-                                Created: {action.created_at ? new Date(action.created_at).toLocaleDateString('id-ID') : '—'}
+                                {t('created')}: {action.created_at ? new Date(action.created_at).toLocaleDateString('id-ID') : '—'}
                               </p>
                             </div>
                           </div>
@@ -450,7 +452,7 @@ export default function AdminUserDetail() {
           </div>
         </>
       ) : (
-        <EmptyState title="User Not Found" description="The requested user could not be found." />
+        <EmptyState title={t('userNotFound')} description={t('userNotFoundDesc')} />
       )}
     </div>
   );

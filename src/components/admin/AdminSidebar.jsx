@@ -53,7 +53,7 @@ export default function AdminSidebar({ open, onClose }) {
             </div>
             <div>
               <h1 className="text-lg font-bold text-gray-900 leading-none">EcoTrack</h1>
-              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Admin Panel</p>
+              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{t('adminPanel')}</p>
             </div>
           </div>
           <button onClick={onClose} className="lg:hidden p-1.5 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer">
@@ -63,7 +63,7 @@ export default function AdminSidebar({ open, onClose }) {
 
         {/* Nav */}
         <nav className="flex-1 py-4 px-3 overflow-y-auto">
-          <p className="px-3 mb-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Menu</p>
+          <p className="px-3 mb-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{t('menu')}</p>
           <ul className="space-y-1">
             {menuItems.map((item) => (
               <li key={item.path}>
@@ -90,7 +90,7 @@ export default function AdminSidebar({ open, onClose }) {
         <div className="p-4 border-t border-gray-100">
           <div className="px-3 py-3 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl">
             <p className="text-xs font-semibold text-emerald-800">EcoTrack v1.0</p>
-            <p className="text-[11px] text-emerald-600 mt-0.5">Admin Dashboard</p>
+            <p className="text-[11px] text-emerald-600 mt-0.5">{t('adminDashboard')}</p>
           </div>
         </div>
       </aside>

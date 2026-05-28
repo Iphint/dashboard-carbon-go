@@ -8,17 +8,19 @@ import StatCard from '../../components/admin/StatCard';
 import { CardSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
 import { getDashboardSummary } from '../../services/adminApi';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const FILTERS = [
-  { label: 'Today', value: 'today' },
-  { label: 'Last 7 Days', value: '7days' },
-  { label: 'Last 30 Days', value: '30days' },
-  { label: 'All Time', value: 'all' },
+  { labelKey: 'today', value: 'today' },
+  { labelKey: 'last7Days', value: '7days' },
+  { labelKey: 'last30Days', value: '30days' },
+  { labelKey: 'allTime', value: 'all' },
 ];
 
 const PIE_COLORS = ['#10b981', '#ef4444'];
 
 export default function AdminDashboard() {
+  const { t } = useAdminLanguage();
   const [filter, setFilter] = useState('all');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,34 +35,34 @@ export default function AdminDashboard() {
     } catch {
       // API not available — show empty state with no data
       setData(null);
-      setError('API not available. Connect your backend to see live data.');
+      setError(t('apiUnavailable'));
     } finally {
       setLoading(false);
     }
-  }, [filter]);
+  }, [filter, t]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
   const stats = [
-    { title: 'Total Users', value: data?.total_users, icon: Users, color: 'blue' },
-    { title: 'Total Unit', value: data?.total_unit, icon: Box, color: 'purple' },
-    { title: 'Total Aktivitas', value: data?.total_activities, icon: Activity, color: 'cyan' },
-    { title: 'Aksi Baik', value: data?.total_good_actions, icon: ThumbsUp, color: 'emerald' },
-    { title: 'Aksi Buruk', value: data?.total_bad_actions, icon: ThumbsDown, color: 'red' },
-    { title: 'Rata-rata Rasio Eko', value: data?.avg_eco_ratio != null ? `${data.avg_eco_ratio}%` : null, icon: Percent, color: 'teal' },
-    { title: 'Custom Green Actions', value: data?.total_custom_green_actions, icon: Leaf, color: 'emerald' },
-    { title: 'Quests Completed', value: data?.total_quests_completed, icon: Sword, color: 'indigo' },
-    { title: 'Eco Badges Earned', value: data?.total_badges_earned, icon: Award, color: 'amber' },
-    { title: 'Milestones Completed', value: data?.total_milestones_completed, icon: Target, color: 'pink' },
+    { title: t('totalUsers'), value: data?.total_users, icon: Users, color: 'blue' },
+    { title: t('totalUnit'), value: data?.total_unit, icon: Box, color: 'purple' },
+    { title: t('totalActivities'), value: data?.total_activities, icon: Activity, color: 'cyan' },
+    { title: t('goodActions'), value: data?.total_good_actions, icon: ThumbsUp, color: 'emerald' },
+    { title: t('badActions'), value: data?.total_bad_actions, icon: ThumbsDown, color: 'red' },
+    { title: t('avgEcoRatio'), value: data?.avg_eco_ratio != null ? `${data.avg_eco_ratio}%` : null, icon: Percent, color: 'teal' },
+    { title: t('customGreenActions'), value: data?.total_custom_green_actions, icon: Leaf, color: 'emerald' },
+    { title: t('questsCompleted'), value: data?.total_quests_completed, icon: Sword, color: 'indigo' },
+    { title: t('ecoBadgesEarned'), value: data?.total_badges_earned, icon: Award, color: 'amber' },
+    { title: t('milestonesCompleted'), value: data?.total_milestones_completed, icon: Target, color: 'pink' },
   ];
 
   // Demo chart data (only show when real data is available)
   const activityChartData = data?.activity_chart || [];
   const actionsPieData = data?.total_good_actions != null ? [
-    { name: 'Good Actions', value: data.total_good_actions || 0 },
-    { name: 'Bad Actions', value: data.total_bad_actions || 0 },
+    { name: t('goodActions'), value: data.total_good_actions || 0 },
+    { name: t('badActions'), value: data.total_bad_actions || 0 },
   ] : [];
 
   return (
@@ -78,7 +80,7 @@ export default function AdminDashboard() {
                 : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
             }`}
           >
-            {f.label}
+            {t(f.labelKey)}
           </button>
         ))}
       </div>
@@ -110,7 +112,7 @@ export default function AdminDashboard() {
             <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-emerald-500" />
-                Activity Trend
+                {t('activityTrend')}
               </h3>
               {activityChartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={280}>
@@ -132,7 +134,7 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               ) : (
                 <div className="h-[280px] flex items-center justify-center text-sm text-gray-400">
-                  No chart data available. Connect your API to visualize trends.
+                  {t('noChartData')}
                 </div>
               )}
             </div>
@@ -141,7 +143,7 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
               <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
                 <Activity className="w-4 h-4 text-blue-500" />
-                Actions Distribution
+                {t('actionsDistribution')}
               </h3>
               {actionsPieData.length > 0 && (actionsPieData[0].value > 0 || actionsPieData[1].value > 0) ? (
                 <ResponsiveContainer width="100%" height={280}>
@@ -166,18 +168,18 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               ) : (
                 <div className="h-[280px] flex items-center justify-center text-sm text-gray-400">
-                  No action data available yet.
+                  {t('noActionData')}
                 </div>
               )}
               {actionsPieData.length > 0 && (
                 <div className="flex items-center justify-center gap-4 mt-2">
                   <div className="flex items-center gap-1.5 text-xs">
                     <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                    <span className="text-gray-600">Good</span>
+                    <span className="text-gray-600">{t('good')}</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs">
                     <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <span className="text-gray-600">Bad</span>
+                    <span className="text-gray-600">{t('bad')}</span>
                   </div>
                 </div>
               )}

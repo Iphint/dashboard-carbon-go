@@ -100,15 +100,15 @@ export default function AdminQuests() {
 
       {formOpen && (
         <form onSubmit={save} className="bg-white rounded-2xl border border-blue-100 p-5 shadow-sm grid grid-cols-1 md:grid-cols-6 gap-3">
-          <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || slugify(e.target.value) })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
-          <input required placeholder="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: slugify(e.target.value) })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required placeholder="Icon" value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required type="number" min="0" placeholder="Target CU" value={form.requirement_value} onChange={(e) => setForm({ ...form, requirement_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required type="number" min="0" placeholder="Reward" value={form.reward} onChange={(e) => setForm({ ...form, reward: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-5" />
+          <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || slugify(e.target.value) })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
+          <input required placeholder={t('slug')} value={form.slug} onChange={(e) => setForm({ ...form, slug: slugify(e.target.value) })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required placeholder={t('icon')} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required type="number" min="0" placeholder={t('targetCu')} value={form.requirement_value} onChange={(e) => setForm({ ...form, requirement_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required type="number" min="0" placeholder={t('reward')} value={form.reward} onChange={(e) => setForm({ ...form, reward: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-5" />
           <label className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 text-sm text-gray-600">
             <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
-            Active
+            {t('active')}
           </label>
           <div className="flex gap-2 md:col-span-6">
             <button disabled={saving} className="rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60 px-5 py-2">{saving ? t('saving') : editing ? t('updateQuest') : t('createQuest')}</button>
@@ -118,7 +118,7 @@ export default function AdminQuests() {
       )}
 
       {loading ? <CardSkeleton count={6} /> : error ? <ErrorState message={error} onRetry={fetchData} /> : !quests.length ? (
-        <EmptyState title="No Quests" description="No quests data available." icon={Sword} />
+        <EmptyState title={t('noQuests')} description={t('noQuestsDesc')} icon={Sword} />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {quests.map((q, i) => {
@@ -146,7 +146,7 @@ export default function AdminQuests() {
                         <button onClick={() => remove(q.id)} className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-500 mt-0.5">{q.description || 'Complete this quest'}</p>
+                    <p className="text-sm text-gray-500 mt-0.5">{q.description || t('completeThisQuest')}</p>
                     <div className="mt-3">
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className={`h-full rounded-full ${active ? 'bg-blue-500' : 'bg-gray-300'}`} style={{ width: `${Math.min((q.progress / (q.target || 100)) * 100, 100)}%` }} />

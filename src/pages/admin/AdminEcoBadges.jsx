@@ -4,10 +4,12 @@ import { CardSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
 import EmptyState from '../../components/admin/EmptyState';
 import { createEcoBadge, deleteEcoBadge, getEcoBadges, updateEcoBadge } from '../../services/adminApi';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const emptyForm = { name: '', description: '', icon: '🌿', requirement_type: 'carbon_points', requirement_value: '' };
 
 export default function AdminEcoBadges() {
+  const { t } = useAdminLanguage();
   const [badges, setBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -24,11 +26,11 @@ export default function AdminEcoBadges() {
       setBadges(res.data?.badges || res.data || []);
     } catch {
       setBadges([]);
-      setError('Unable to fetch eco badges. Make sure the API is connected.');
+      setError(t('fetchEcoBadgesError'));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();
@@ -77,25 +79,25 @@ export default function AdminEcoBadges() {
       <div className="flex justify-end">
         <button onClick={() => openForm()} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
           <Plus className="w-4 h-4" />
-          Add Eco Badge
+          {t('addEcoBadge')}
         </button>
       </div>
 
       {formOpen && (
         <form onSubmit={save} className="bg-white rounded-2xl border border-amber-100 p-5 shadow-sm grid grid-cols-1 md:grid-cols-6 gap-3">
-          <input required placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
-          <input required placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
-          <input required placeholder="Icon" value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
+          <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
+          <input required placeholder={t('icon')} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
           <input required type="number" min="0" placeholder="CU" value={form.requirement_value} onChange={(e) => setForm({ ...form, requirement_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
           <div className="flex gap-2 md:col-span-6">
-            <button disabled={saving} className="rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60 px-5 py-2">{saving ? 'Saving...' : editing ? 'Update Badge' : 'Create Badge'}</button>
+            <button disabled={saving} className="rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60 px-5 py-2">{saving ? t('saving') : editing ? t('updateBadge') : t('createBadge')}</button>
             <button type="button" onClick={closeForm} className="px-3 rounded-xl bg-gray-100 text-gray-600"><X className="w-4 h-4" /></button>
           </div>
         </form>
       )}
 
       {loading ? <CardSkeleton count={8} /> : error ? <ErrorState message={error} onRetry={fetchData} /> : !badges.length ? (
-        <EmptyState title="No Eco Badges" description="No eco badges data available." icon={Award} />
+        <EmptyState title={t('noEcoBadges')} description={t('noEcoBadgesDesc')} icon={Award} />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
           {badges.map((b, i) => (
@@ -108,8 +110,8 @@ export default function AdminEcoBadges() {
                 {b.achieved ? <span className="text-2xl">{b.icon || '🏅'}</span> : <Lock className="w-7 h-7" />}
               </div>
               <h3 className={`font-semibold text-sm ${b.achieved ? 'text-amber-800' : 'text-gray-600'}`}>{b.name}</h3>
-              <p className="text-xs text-gray-400 mt-0.5">{b.requirement || 'Meet the requirements'}</p>
-              <p className="text-[11px] text-gray-400 mt-1">Earned by {b.achieved_count || 0} users</p>
+              <p className="text-xs text-gray-400 mt-0.5">{b.requirement || t('meetRequirements')}</p>
+              <p className="text-[11px] text-gray-400 mt-1">{t('earnedBy')} {b.achieved_count || 0} {t('users')}</p>
               {b.achieved && b.achieved_at && (
                 <div className="flex items-center justify-center gap-1 mt-2 text-xs text-amber-600">
                   <Calendar className="w-3 h-3" />
