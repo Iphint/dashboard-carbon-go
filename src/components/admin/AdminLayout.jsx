@@ -2,27 +2,29 @@ import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const pageTitles = {
-  '/admin': 'Dashboard',
-  '/admin/dashboard': 'Dashboard',
-  '/admin/users': 'User Management',
-  '/admin/activity-logs': 'Activity Logs',
-  '/admin/leaderboard': 'Leaderboard',
-  '/admin/custom-green-actions': 'Custom Green Actions',
-  '/admin/milestones': 'Milestones',
-  '/admin/eco-badges': 'Eco Badges',
-  '/admin/quests': 'Quests',
-  '/admin/rank-logs': 'Rank Logs',
+  '/admin': 'dashboard',
+  '/admin/dashboard': 'dashboard',
+  '/admin/users': 'userManagement',
+  '/admin/activity-logs': 'activityLogs',
+  '/admin/leaderboard': 'leaderboard',
+  '/admin/custom-green-actions': 'customGreenActions',
+  '/admin/milestones': 'milestones',
+  '/admin/eco-badges': 'ecoBadges',
+  '/admin/quests': 'quests',
+  '/admin/rank-logs': 'rankLogs',
 };
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const { t } = useAdminLanguage();
 
   const getTitle = () => {
-    if (location.pathname.startsWith('/admin/users/')) return 'User Detail';
-    return pageTitles[location.pathname] || 'Dashboard';
+    if (location.pathname.startsWith('/admin/users/')) return t('userDetail');
+    return t(pageTitles[location.pathname] || 'dashboard');
   };
 
   return (

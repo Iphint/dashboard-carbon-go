@@ -12,20 +12,23 @@ import {
   X,
   TreePine,
 } from 'lucide-react';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const menuItems = [
-  { label: 'Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
-  { label: 'Users', path: '/admin/users', icon: Users },
-  { label: 'Activity Logs', path: '/admin/activity-logs', icon: Activity },
-  { label: 'Leaderboard', path: '/admin/leaderboard', icon: Trophy },
-  { label: 'Custom Green Actions', path: '/admin/custom-green-actions', icon: Leaf },
-  { label: 'Milestones', path: '/admin/milestones', icon: Target },
-  { label: 'Eco Badges', path: '/admin/eco-badges', icon: Award },
-  { label: 'Quests', path: '/admin/quests', icon: Sword },
-  { label: 'Rank Logs', path: '/admin/rank-logs', icon: TrendingUp },
+  { labelKey: 'dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+  { labelKey: 'userManagement', path: '/admin/users', icon: Users },
+  { labelKey: 'activityLogs', path: '/admin/activity-logs', icon: Activity },
+  { labelKey: 'leaderboard', path: '/admin/leaderboard', icon: Trophy },
+  { labelKey: 'customGreenActions', path: '/admin/custom-green-actions', icon: Leaf },
+  { labelKey: 'milestones', path: '/admin/milestones', icon: Target },
+  { labelKey: 'ecoBadges', path: '/admin/eco-badges', icon: Award },
+  { labelKey: 'quests', path: '/admin/quests', icon: Sword },
+  { labelKey: 'rankLogs', path: '/admin/rank-logs', icon: TrendingUp },
 ];
 
 export default function AdminSidebar({ open, onClose }) {
+  const { t } = useAdminLanguage();
+
   return (
     <>
       {/* Mobile overlay */}
@@ -76,7 +79,7 @@ export default function AdminSidebar({ open, onClose }) {
                   }
                 >
                   <item.icon className="w-[18px] h-[18px] shrink-0" />
-                  <span>{item.label}</span>
+                  <span>{t(item.labelKey)}</span>
                 </NavLink>
               </li>
             ))}

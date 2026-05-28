@@ -1,4 +1,5 @@
 import { Shield, Lock, Calendar, ChevronRight } from 'lucide-react';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const RANKS = [
   { name: 'Guest', color: 'gray', icon: '🌱', description: 'Starting your eco journey' },
@@ -14,23 +15,29 @@ const colorMap = {
   amber: { bg: 'bg-amber-100', border: 'border-amber-200', text: 'text-amber-700', line: 'bg-amber-200' },
 };
 
-export default function RankTimeline({ rankLogs = [] }) {
+export default function RankTimeline({ rankLogs = [], summary = false }) {
+  const { t } = useAdminLanguage();
   const achievedRanks = {};
   rankLogs.forEach((log) => {
-    achievedRanks[log.rank] = log.achieved_at;
+    achievedRanks[String(log.rank).toLowerCase()] = log.achieved_at || true;
   });
+
+  const countByRank = Object.fromEntries(
+    rankLogs.map((log) => [String(log.rank).toLowerCase(), Number(log.achieved_count || 0)])
+  );
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-center gap-2 mb-6">
         <Shield className="w-5 h-5 text-emerald-600" />
-        <h3 className="text-lg font-bold text-gray-900">Rank History</h3>
+        <h3 className="text-lg font-bold text-gray-900">{summary ? t('rankLogs') : t('rankHistory')}</h3>
       </div>
 
       <div className="space-y-0">
         {RANKS.map((rank, index) => {
-          const achieved = !!achievedRanks[rank.name];
-          const achievedDate = achievedRanks[rank.name];
+          const rankKey = rank.name.toLowerCase();
+          const achieved = summary ? countByRank[rankKey] > 0 : !!achievedRanks[rankKey];
+          const achievedDate = achievedRanks[rankKey];
           const c = colorMap[rank.color];
           const isLast = index === RANKS.length - 1;
 
@@ -56,22 +63,26 @@ export default function RankTimeline({ rankLogs = [] }) {
                   </h4>
                   {achieved && (
                     <span className={`inline-flex px-2 py-0.5 text-[10px] font-medium rounded-full ${c.bg} ${c.text}`}>
-                      Achieved
+                      {t('achieved')}
                     </span>
                   )}
                   {!achieved && (
                     <span className="inline-flex px-2 py-0.5 text-[10px] font-medium rounded-full bg-gray-100 text-gray-400">
-                      Locked
+                      {summary ? t('achievedByUsers', { count: 0 }) : t('locked')}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-gray-400 mt-0.5">{rank.description}</p>
-                {achieved && achievedDate && (
+                {summary && (
+                  <div className="flex items-center gap-1 mt-1.5 text-xs text-gray-500">
+                    <ChevronRight className="w-3 h-3" />
+                    {t('achievedByUsers', { count: countByRank[rankKey] || 0 })}
+                  </div>
+                )}
+                {!summary && achieved && achievedDate && (
                   <div className="flex items-center gap-1 mt-1.5 text-xs text-gray-500">
                     <Calendar className="w-3 h-3" />
-                    {new Date(achievedDate).toLocaleDateString('id-ID', {
-                      day: 'numeric', month: 'long', year: 'numeric'
-                    })}
+                    {t('achievedOn')} {new Date(achievedDate).toLocaleDateString('id-ID')}
                   </div>
                 )}
               </div>

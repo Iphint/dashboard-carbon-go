@@ -4,6 +4,7 @@ import { CardSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
 import EmptyState from '../../components/admin/EmptyState';
 import { createQuest, deleteQuest, getQuests, updateQuest } from '../../services/adminApi';
+import { useAdminLanguage } from '../../context/LanguageContext';
 
 const emptyForm = {
   slug: '',
@@ -20,6 +21,7 @@ function slugify(value) {
 }
 
 export default function AdminQuests() {
+  const { t } = useAdminLanguage();
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -92,7 +94,7 @@ export default function AdminQuests() {
       <div className="flex justify-end">
         <button onClick={() => openForm()} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">
           <Plus className="w-4 h-4" />
-          Add Quest
+          {t('addQuest')}
         </button>
       </div>
 
@@ -109,7 +111,7 @@ export default function AdminQuests() {
             Active
           </label>
           <div className="flex gap-2 md:col-span-6">
-            <button disabled={saving} className="rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60 px-5 py-2">{saving ? 'Saving...' : editing ? 'Update Quest' : 'Create Quest'}</button>
+            <button disabled={saving} className="rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60 px-5 py-2">{saving ? t('saving') : editing ? t('updateQuest') : t('createQuest')}</button>
             <button type="button" onClick={closeForm} className="px-3 rounded-xl bg-gray-100 text-gray-600"><X className="w-4 h-4" /></button>
           </div>
         </form>
@@ -149,7 +151,10 @@ export default function AdminQuests() {
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className={`h-full rounded-full ${active ? 'bg-blue-500' : 'bg-gray-300'}`} style={{ width: `${Math.min((q.progress / (q.target || 100)) * 100, 100)}%` }} />
                       </div>
-                      <p className="text-[11px] text-gray-400 mt-1">{q.progress}/{q.target || 100} CU · Reward {q.reward || 0}</p>
+                      <p className="text-[11px] text-gray-400 mt-1">{q.progress}/{q.target || 100} CU · {t('reward')} {q.reward || 0}</p>
+                      <p className="text-[11px] text-emerald-600 font-medium mt-1">
+                        {t('achievedBy')} {q.achieved_count || 0} {t('users')}
+                      </p>
                     </div>
                     {completed && q.completed_at && (
                       <div className="flex items-center gap-1 mt-2 text-xs text-emerald-600">
