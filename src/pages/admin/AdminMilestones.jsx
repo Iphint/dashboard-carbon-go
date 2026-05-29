@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calendar, CheckCircle2, Edit2, Lock, Plus, Target, Trash2, X } from 'lucide-react';
+import { CheckCircle2, Edit2, Lock, Plus, Target, Trash2, X } from 'lucide-react';
 import { CardSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
 import EmptyState from '../../components/admin/EmptyState';
@@ -112,13 +112,7 @@ export default function AdminMilestones() {
                     </div>
                   </div>
                   <p className="text-sm text-gray-500 mt-0.5">{m.description || t('completeThisMilestone')}</p>
-                  <p className="text-xs text-gray-400 mt-2">{t('target')}: {m.target || m.target_value || 0} CU · {t('achievedBy')} {m.achieved_count || 0} {t('users')}</p>
-                  {m.achieved && m.achieved_at && (
-                    <div className="flex items-center gap-1 mt-2 text-xs text-emerald-600">
-                      <Calendar className="w-3 h-3" />
-                      {new Date(m.achieved_at).toLocaleDateString('id-ID')}
-                    </div>
-                  )}
+                  <p className="text-xs text-gray-400 mt-2">{t('target')}: {m.target || m.target_value || 0} {t('journeyPoints')} · {t('achievedBy')} {m.achieved_count || 0} {t('users')}</p>
                 </div>
               </div>
             </div>

@@ -18,10 +18,12 @@ axios.defaults.withCredentials = true;
 
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token');
+  const language = localStorage.getItem('admin_language') || 'id';
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  config.headers['X-Language'] = language;
 
   return config;
 });
@@ -96,6 +98,9 @@ export const getUserRankLogs = (userId) =>
 
 export const getRankLogs = () =>
   apiClient.get('/admin/rank-logs');
+
+export const createRankLog = (payload) =>
+  apiClient.post('/admin/rank-logs', payload);
 
 // Leaderboard
 export const getLeaderboard = (params = {}) =>

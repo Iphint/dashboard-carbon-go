@@ -41,12 +41,6 @@ function MilestoneCard({ milestone }) {
             {milestone.name}
           </p>
           <p className="text-xs text-gray-400 mt-0.5">{milestone.description || t('milestoneDescFallback')}</p>
-          {achieved && milestone.achieved_at && (
-            <div className="flex items-center gap-1 mt-2 text-xs text-emerald-600">
-              <Calendar className="w-3 h-3" />
-              {new Date(milestone.achieved_at).toLocaleDateString('id-ID')}
-            </div>
-          )}
           {!achieved && milestone.progress !== undefined && (
             <div className="mt-2">
               <ProgressBar value={milestone.progress} max={milestone.target || 100} color="emerald" />
@@ -77,12 +71,6 @@ function BadgeCard({ badge }) {
         {badge.name}
       </p>
       <p className="text-xs text-gray-400 mt-0.5">{badge.requirement || t('badgeDescFallback')}</p>
-      {achieved && badge.achieved_at && (
-        <div className="flex items-center justify-center gap-1 mt-2 text-xs text-amber-600">
-          <Calendar className="w-3 h-3" />
-          {new Date(badge.achieved_at).toLocaleDateString('id-ID')}
-        </div>
-      )}
     </div>
   );
 }

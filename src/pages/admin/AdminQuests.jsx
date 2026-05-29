@@ -151,7 +151,7 @@ export default function AdminQuests() {
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className={`h-full rounded-full ${active ? 'bg-blue-500' : 'bg-gray-300'}`} style={{ width: `${Math.min((q.progress / (q.target || 100)) * 100, 100)}%` }} />
                       </div>
-                      <p className="text-[11px] text-gray-400 mt-1">{q.progress}/{q.target || 100} CU · {t('reward')} {q.reward || 0}</p>
+                      <p className="text-[11px] text-gray-400 mt-1">{q.progress}/{q.target || 100} {t('journeyPoints')} · {t('reward')} {q.reward || 0}</p>
                       <p className="text-[11px] text-emerald-600 font-medium mt-1">
                         {t('achievedBy')} {q.achieved_count || 0} {t('users')}
                       </p>
