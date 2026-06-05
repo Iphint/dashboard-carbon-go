@@ -1,7 +1,7 @@
-import { Shield, Lock, Calendar } from 'lucide-react';
+import { Shield, Lock, Calendar, Pencil, Trash2 } from 'lucide-react';
 import { useAdminLanguage } from '../../context/LanguageContext';
 
-const RANKS = [
+const DEFAULT_RANKS = [
   { name: 'Guest', labelKey: 'guest', color: 'gray', icon: '🌱', descriptionKey: 'guestDesc' },
   { name: 'Explorer', labelKey: 'explorer', color: 'blue', icon: '🔍', descriptionKey: 'explorerDesc' },
   { name: 'Guardian', labelKey: 'guardian', color: 'emerald', icon: '🛡️', descriptionKey: 'guardianDesc' },
@@ -13,10 +13,45 @@ const colorMap = {
   blue: { bg: 'bg-blue-100', border: 'border-blue-200', text: 'text-blue-700', line: 'bg-blue-200' },
   emerald: { bg: 'bg-emerald-100', border: 'border-emerald-200', text: 'text-emerald-700', line: 'bg-emerald-200' },
   amber: { bg: 'bg-amber-100', border: 'border-amber-200', text: 'text-amber-700', line: 'bg-amber-200' },
+  violet: { bg: 'bg-violet-100', border: 'border-violet-200', text: 'text-violet-700', line: 'bg-violet-200' },
+  rose: { bg: 'bg-rose-100', border: 'border-rose-200', text: 'text-rose-700', line: 'bg-rose-200' },
 };
 
-export default function RankTimeline({ rankLogs = [], summary = false }) {
+const customColors = ['violet', 'rose', 'blue', 'emerald', 'amber'];
+
+function buildRankList(rankLogs) {
+  const defaultByKey = new Map(DEFAULT_RANKS.map((rank) => [rank.name.toLowerCase(), rank]));
+  const logByKey = new Map(
+    rankLogs.map((log) => [String(log.rank || log.rank_name || '').trim().toLowerCase(), log])
+  );
+  const rankList = DEFAULT_RANKS.map((rank) => ({
+    ...rank,
+    id: logByKey.get(rank.name.toLowerCase())?.id,
+    is_default: true,
+  }));
+
+  rankLogs.forEach((log) => {
+    const rankName = String(log.rank || log.rank_name || '').trim();
+    const rankKey = rankName.toLowerCase();
+    if (!rankName || defaultByKey.has(rankKey) || rankList.some((rank) => rank.name.toLowerCase() === rankKey)) return;
+
+    const customIndex = rankList.length - DEFAULT_RANKS.length;
+    rankList.push({
+      id: log.id,
+      name: rankName,
+      color: customColors[customIndex % customColors.length],
+      icon: '🏅',
+      custom: true,
+      is_default: Boolean(log.is_default),
+    });
+  });
+
+  return rankList;
+}
+
+export default function RankTimeline({ rankLogs = [], summary = false, onEdit, onDelete }) {
   const { t } = useAdminLanguage();
+  const ranks = buildRankList(rankLogs);
   const achievedRanks = {};
   rankLogs.forEach((log) => {
     achievedRanks[String(log.rank).toLowerCase()] = log.achieved_at || true;
@@ -34,14 +69,16 @@ export default function RankTimeline({ rankLogs = [], summary = false }) {
       </div>
 
       <div className="space-y-0">
-        {RANKS.map((rank, index) => {
+        {ranks.map((rank, index) => {
           const rankKey = rank.name.toLowerCase();
           const achieved = summary ? countByRank[rankKey] > 0 : !!achievedRanks[rankKey];
           const achievedDate = achievedRanks[rankKey];
           const c = colorMap[rank.color];
-          const isLast = index === RANKS.length - 1;
+          const isLast = index === ranks.length - 1;
           const summaryCount = countByRank[rankKey] || 0;
           const highlighted = summary || achieved;
+          const rankLabel = rank.labelKey ? t(rank.labelKey) : rank.name;
+          const description = rank.descriptionKey ? t(rank.descriptionKey) : t('customRankDesc');
 
           return (
             <div key={rank.name} className={`flex gap-4 ${summary ? `rounded-2xl border p-4 mb-3 ${c.bg} ${c.border}` : ''}`}>
@@ -61,9 +98,9 @@ export default function RankTimeline({ rankLogs = [], summary = false }) {
 
               {/* Content */}
               <div className="pb-8 flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h4 className={`font-semibold text-sm ${highlighted ? c.text : 'text-gray-400'}`}>
-                    {t(rank.labelKey)}
+                    {rankLabel}
                   </h4>
                   {achieved && !summary && (
                     <span className={`inline-flex px-2 py-0.5 text-[10px] font-medium rounded-full ${c.bg} ${c.text}`}>
@@ -80,8 +117,28 @@ export default function RankTimeline({ rankLogs = [], summary = false }) {
                       {t('locked')}
                     </span>
                   )}
+                  {summary && rank.custom && !rank.is_default && (
+                    <div className="ml-auto flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => onEdit?.(rank)}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white text-gray-500 border border-gray-200 hover:text-emerald-700 hover:border-emerald-200"
+                        title={t('editRank')}
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDelete?.(rank)}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white text-gray-500 border border-gray-200 hover:text-red-600 hover:border-red-200"
+                        title={t('deleteRank')}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
-                <p className="text-xs text-gray-400 mt-0.5">{t(rank.descriptionKey)}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{description}</p>
                 {!summary && achieved && achievedDate && (
                   <div className="flex items-center gap-1 mt-1.5 text-xs text-gray-500">
                     <Calendar className="w-3 h-3" />

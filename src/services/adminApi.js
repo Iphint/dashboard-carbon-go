@@ -102,6 +102,12 @@ export const getRankLogs = () =>
 export const createRankLog = (payload) =>
   apiClient.post('/admin/rank-logs', payload);
 
+export const updateRankLog = (id, payload) =>
+  apiClient.put(`/admin/rank-logs/${id}`, payload);
+
+export const deleteRankLog = (id) =>
+  apiClient.delete(`/admin/rank-logs/${id}`);
+
 // Leaderboard
 export const getLeaderboard = (params = {}) =>
   apiClient.get('/admin/leaderboard', { params });
