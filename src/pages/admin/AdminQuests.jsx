@@ -103,8 +103,8 @@ export default function AdminQuests() {
           <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || slugify(e.target.value) })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
           <input required placeholder={t('slug')} value={form.slug} onChange={(e) => setForm({ ...form, slug: slugify(e.target.value) })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
           <input required placeholder={t('icon')} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required type="number" min="0" placeholder={t('targetCu')} value={form.requirement_value} onChange={(e) => setForm({ ...form, requirement_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required type="number" min="0" placeholder={t('reward')} value={form.reward} onChange={(e) => setForm({ ...form, reward: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required type="number" min="0" placeholder={t('requirementCarbonUnit')} value={form.requirement_value} onChange={(e) => setForm({ ...form, requirement_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required type="number" min="0" placeholder={t('rewardJourneyPoints')} value={form.reward} onChange={(e) => setForm({ ...form, reward: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
           <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-5" />
           <label className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 text-sm text-gray-600">
             <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
@@ -151,7 +151,7 @@ export default function AdminQuests() {
                       <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div className={`h-full rounded-full ${active ? 'bg-blue-500' : 'bg-gray-300'}`} style={{ width: `${Math.min((q.progress / (q.target || 100)) * 100, 100)}%` }} />
                       </div>
-                      <p className="text-[11px] text-gray-400 mt-1">{q.progress}/{q.target || 100} {t('journeyPoints')} · {t('reward')} {q.reward || 0}</p>
+                      <p className="text-[11px] text-gray-400 mt-1">{t('requires')}: {q.progress}/{q.target || 100} CU · {t('reward')}: {q.reward || 0} {t('journeyPoints')}</p>
                       <p className="text-[11px] text-emerald-600 font-medium mt-1">
                         {t('achievedBy')} {q.achieved_count || 0} {t('users')}
                       </p>

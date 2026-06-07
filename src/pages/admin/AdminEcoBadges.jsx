@@ -88,7 +88,7 @@ export default function AdminEcoBadges() {
           <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
           <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
           <input required placeholder={t('icon')} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required type="number" min="0" placeholder={t('journeyPoints')} value={form.requirement_value} onChange={(e) => setForm({ ...form, requirement_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required type="number" min="0" placeholder={t('targetCarbonUnit')} value={form.requirement_value} onChange={(e) => setForm({ ...form, requirement_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
           <div className="flex gap-2 md:col-span-6">
             <button disabled={saving} className="rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60 px-5 py-2">{saving ? t('saving') : editing ? t('updateBadge') : t('createBadge')}</button>
             <button type="button" onClick={closeForm} className="px-3 rounded-xl bg-gray-100 text-gray-600"><X className="w-4 h-4" /></button>
@@ -111,7 +111,7 @@ export default function AdminEcoBadges() {
               </div>
               <h3 className="font-semibold text-sm text-amber-800">{b.name}</h3>
               <p className="text-xs text-gray-500 mt-0.5">{b.description || t('meetRequirements')}</p>
-              <p className="text-[11px] text-gray-400 mt-1">{t('target')}: {b.requirement_value || 0} {t('journeyPoints')}</p>
+              <p className="text-[11px] text-gray-400 mt-1">{t('target')}: {b.requirement_value || 0} CU</p>
               <p className="text-[11px] text-gray-400 mt-1">{t('earnedBy')} {b.achieved_count || 0} {t('users')}</p>
             </div>
           ))}

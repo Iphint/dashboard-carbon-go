@@ -85,7 +85,7 @@ export default function AdminMilestones() {
         <form onSubmit={save} className="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
           <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
           <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required type="number" min="0" placeholder={t('targetCu')} value={form.target_value} onChange={(e) => setForm({ ...form, target_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          <input required type="number" min="0" placeholder={t('targetJourneyPoints')} value={form.target_value} onChange={(e) => setForm({ ...form, target_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
           <div className="flex gap-2">
             <button disabled={saving} className="flex-1 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60">{saving ? t('saving') : editing ? t('update') : t('create')}</button>
             <button type="button" onClick={closeForm} className="px-3 rounded-xl bg-gray-100 text-gray-600"><X className="w-4 h-4" /></button>

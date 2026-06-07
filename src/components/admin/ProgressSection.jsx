@@ -44,7 +44,7 @@ function MilestoneCard({ milestone }) {
           {!achieved && milestone.progress !== undefined && (
             <div className="mt-2">
               <ProgressBar value={milestone.progress} max={milestone.target || 100} color="emerald" />
-              <p className="text-[11px] text-gray-400 mt-1">{milestone.progress}/{milestone.target || 100}</p>
+              <p className="text-[11px] text-gray-400 mt-1">{milestone.progress}/{milestone.target || 100} {t('journeyPoints')}</p>
             </div>
           )}
         </div>
@@ -106,7 +106,7 @@ function QuestCard({ quest }) {
           {quest.progress !== undefined && !completed && (
             <div className="mt-2">
               <ProgressBar value={quest.progress} max={quest.target || 100} color={statusColor} />
-              <p className="text-[11px] text-gray-400 mt-1">{quest.progress}/{quest.target || 100}</p>
+              <p className="text-[11px] text-gray-400 mt-1">{t('requires')}: {quest.progress}/{quest.target || 100} CU · {t('reward')}: {quest.reward || 0} {t('journeyPoints')}</p>
             </div>
           )}
           {completed && quest.completed_at && (
