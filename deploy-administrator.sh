@@ -10,6 +10,9 @@ fi
 
 cd "$APP_DIR"
 
+echo "Stash local changes..."
+git stash --include-untracked
+
 echo "Pull latest dashboard..."
 git pull origin main
 
