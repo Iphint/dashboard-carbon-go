@@ -10,11 +10,10 @@ fi
 
 cd "$APP_DIR"
 
-echo "Stash local changes..."
-git stash --include-untracked
-
-echo "Pull latest dashboard..."
-git pull origin main
+echo "Reset local changes..."
+git fetch origin main
+git reset --hard origin/main
+git clean -fd
 
 echo "Install dependencies..."
 npm install
