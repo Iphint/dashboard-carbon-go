@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Plus, TrendingUp, X } from 'lucide-react';
+import Swal from 'sweetalert2';
 import RankTimeline from '../../components/admin/RankTimeline';
 import { CardSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
@@ -75,7 +76,17 @@ export default function AdminRankLogs() {
   };
 
   const removeRank = async (rank) => {
-    if (!rank.id || !window.confirm(t('deleteRankConfirm', { name: rank.name }))) return;
+    if (!rank.id) return;
+    const result = await Swal.fire({
+      title: t('deleteRankConfirm', { name: rank.name }),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: t('delete'),
+      cancelButtonText: t('cancel'),
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#94a3b8'
+    });
+    if (!result.isConfirmed) return;
 
     setSaving(true);
     setError(null);

@@ -8,6 +8,7 @@ const pageTitles = {
   '/admin': 'dashboard',
   '/admin/dashboard': 'dashboard',
   '/admin/users': 'userManagement',
+  '/admin/survey-logs': 'surveyLogs',
   '/admin/activity-logs': 'activityLogs',
   '/admin/leaderboard': 'leaderboard',
   '/admin/custom-green-actions': 'customGreenActions',

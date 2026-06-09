@@ -4,6 +4,7 @@ import AdminLayout from '../components/admin/AdminLayout';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminUsers from '../pages/admin/AdminUsers';
 import AdminUserDetail from '../pages/admin/AdminUserDetail';
+import AdminSurveyLogs from '../pages/admin/AdminSurveyLogs';
 import AdminActivityLogs from '../pages/admin/AdminActivityLogs';
 import AdminLeaderboard from '../pages/admin/AdminLeaderboard';
 import AdminCustomGreenActions from '../pages/admin/AdminCustomGreenActions';
@@ -64,6 +65,7 @@ export default function AdminRoutes() {
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="users/:id" element={<AdminUserDetail />} />
+        <Route path="survey-logs" element={<AdminSurveyLogs />} />
         <Route path="activity-logs" element={<AdminActivityLogs />} />
         <Route path="leaderboard" element={<AdminLeaderboard />} />
         <Route path="custom-green-actions" element={<AdminCustomGreenActions />} />

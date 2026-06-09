@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Search, Filter, X } from 'lucide-react';
+import Swal from 'sweetalert2';
 import UserTable from '../../components/admin/UserTable';
 import { TableSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
@@ -72,6 +73,16 @@ export default function AdminUsers() {
   };
 
   const removeUser = async (id) => {
+    const result = await Swal.fire({
+      title: t('deleteUserConfirm'),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: t('delete'),
+      cancelButtonText: t('cancel'),
+      confirmButtonColor: '#dc2626',
+      cancelButtonColor: '#94a3b8'
+    });
+    if (!result.isConfirmed) return;
     await deleteUser(id);
     fetchUsers();
   };

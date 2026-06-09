@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   Users,
   Activity,
+  CalendarCheck,
   Trophy,
   Leaf,
   Target,
@@ -17,6 +18,7 @@ import { useAdminLanguage } from '../../context/LanguageContext';
 const menuItems = [
   { labelKey: 'dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
   { labelKey: 'userManagement', path: '/admin/users', icon: Users },
+  { labelKey: 'surveyLogs', path: '/admin/survey-logs', icon: CalendarCheck },
   { labelKey: 'activityLogs', path: '/admin/activity-logs', icon: Activity },
   { labelKey: 'leaderboard', path: '/admin/leaderboard', icon: Trophy },
   { labelKey: 'customGreenActions', path: '/admin/custom-green-actions', icon: Leaf },

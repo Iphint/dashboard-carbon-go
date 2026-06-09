@@ -59,6 +59,12 @@ export const getUserById = (id) =>
 export const deleteUser = (id) =>
   apiClient.delete(`/admin/users/${id}`);
 
+export const getSurveyLogs = () =>
+  apiClient.get('/admin/survey-logs');
+
+export const getUserSurveyLogs = (userId) =>
+  apiClient.get(`/admin/users/${userId}/survey-logs`);
+
 // Activity Logs
 export const getUserActivityLogs = (userId, params = {}) =>
   apiClient.get(`/admin/users/${userId}/activity-logs`, { params });
