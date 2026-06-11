@@ -5,6 +5,15 @@ function resolveApiBase() {
 }
 
 const API_BASE = resolveApiBase();
+const LOCAL_FALLBACK_BASES = ['http://localhost:5001/api', 'http://localhost:5000/api', 'http://localhost:3001/api'];
+
+function fallbackBases() {
+  if (API_BASE !== '/api' && !API_BASE.includes('localhost') && !API_BASE.includes('127.0.0.1')) {
+    return [];
+  }
+
+  return LOCAL_FALLBACK_BASES.filter((base) => base !== API_BASE);
+}
 
 const apiClient = axios.create({
   baseURL: API_BASE,
@@ -24,16 +33,29 @@ apiClient.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
   config.headers['X-Language'] = language;
+  config.headers['X-Admin-Client'] = 'true';
 
   return config;
 });
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem('admin_token');
-      localStorage.removeItem('admin_role');
+  async (error) => {
+    const config = error.config || {};
+    const isNetworkError = !error.response;
+    const isRouteNotFound = error.response?.status === 404 && /route not found/i.test(error.response?.data?.message || '');
+    const isAdminAuthRequest = String(config.url || '').startsWith('/admin-auth/');
+    const triedBases = config.__triedBases || [config.baseURL || API_BASE];
+    const nextBase = (isNetworkError && !isAdminAuthRequest)
+      ? fallbackBases().find((base) => !triedBases.includes(base))
+      : null;
+
+    if (nextBase) {
+      return apiClient.request({
+        ...config,
+        baseURL: nextBase,
+        __triedBases: [...triedBases, nextBase]
+      });
     }
 
     return Promise.reject(error);
@@ -41,9 +63,12 @@ apiClient.interceptors.response.use(
 );
 
 // Auth
+// Keep dashboard compatible with currently running backend builds.
+// The admin session is separated by storing the returned admin token locally
+// and sending it as Bearer token on every admin request.
 export const loginAuth = (payload) => apiClient.post('/auth/login', payload);
 export const getAuthMe = () => apiClient.get('/auth/me');
-export const logoutAuth = () => apiClient.post('/auth/logout');
+export const logoutAuth = () => Promise.resolve({ data: { message: 'Admin local session cleared' } });
 
 // Dashboard
 export const getDashboardSummary = (filter = 'all') =>
@@ -59,8 +84,8 @@ export const getUserById = (id) =>
 export const deleteUser = (id) =>
   apiClient.delete(`/admin/users/${id}`);
 
-export const getSurveyLogs = () =>
-  apiClient.get('/admin/survey-logs');
+export const getSurveyLogs = (params = {}) =>
+  apiClient.get('/admin/survey-logs', { params });
 
 export const getUserSurveyLogs = (userId) =>
   apiClient.get(`/admin/users/${userId}/survey-logs`);

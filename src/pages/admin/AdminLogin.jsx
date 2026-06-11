@@ -1,20 +1,16 @@
 import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Lock, Leaf, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useAdminLanguage } from '../../context/LanguageContext';
 
 export default function AdminLogin() {
-  const { user, loading, login } = useAuth();
+  const { login } = useAuth();
   const { language, setLanguage, t } = useAdminLanguage();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: '', password: '' });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-
-  if (!loading && user?.role === 'admin') {
-    return <Navigate to="/admin/dashboard" replace />;
-  }
 
   async function submit(e) {
     e.preventDefault();
