@@ -127,6 +127,10 @@ export const getUserProgress = (userId) =>
 export const getUserRankLogs = (userId) =>
   apiClient.get(`/admin/users/${userId}/rank-logs`);
 
+// Point Logs
+export const getUserPointLogs = (userId) =>
+  apiClient.get(`/admin/users/${userId}/point-logs`);
+
 export const getRankLogs = () =>
   apiClient.get('/admin/rank-logs');
 

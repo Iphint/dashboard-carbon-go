@@ -112,7 +112,7 @@ function QuestCard({ quest }) {
           {completed && quest.completed_at && (
             <div className="flex items-center gap-1 mt-2 text-xs text-emerald-600">
               <Calendar className="w-3 h-3" />
-              {new Date(quest.completed_at).toLocaleDateString('id-ID')}
+              {new Date(quest.completed_at).toLocaleString('id-ID')}
             </div>
           )}
         </div>

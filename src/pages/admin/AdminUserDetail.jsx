@@ -4,12 +4,13 @@ import {
   ArrowLeft, User, Mail, Shield, Calendar, Clock, CheckCircle,
   BookOpen, ClipboardCheck, Activity, ThumbsUp, ThumbsDown, Percent,
   Leaf, Sword, Award, Target, Trophy, TrendingUp, Box, Hash,
-  Filter, X
+  Filter, X, TrendingUp as TrendingUpIcon
 } from 'lucide-react';
 import StatCard from '../../components/admin/StatCard';
 import ActivityLogTable from '../../components/admin/ActivityLogTable';
 import ProgressSection from '../../components/admin/ProgressSection';
 import RankTimeline from '../../components/admin/RankTimeline';
+import PointLogSection from '../../components/admin/PointLogSection';
 import { DetailSkeleton, TableSkeleton, CardSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
 import EmptyState from '../../components/admin/EmptyState';
@@ -19,12 +20,14 @@ import {
   getUserCustomGreenActions,
   getUserProgress,
   getUserRankLogs,
+  getUserPointLogs,
 } from '../../services/adminApi';
 import { useAdminLanguage } from '../../context/LanguageContext';
 
 const TABS = [
   { id: 'overview', labelKey: 'overview', icon: User },
   { id: 'activity', labelKey: 'activityLogs', icon: Activity },
+  { id: 'point-logs', labelKey: 'pointLogs', icon: TrendingUpIcon },
   { id: 'green-actions', labelKey: 'greenActions', icon: Leaf },
   { id: 'progress', labelKey: 'progress', icon: Target },
   { id: 'ranks', labelKey: 'rankHistory', icon: TrendingUp },
@@ -72,6 +75,11 @@ export default function AdminUserDetail() {
   const [rankLogs, setRankLogs] = useState([]);
   const [rankLoading, setRankLoading] = useState(false);
   const [rankError, setRankError] = useState(null);
+
+  // Point logs
+  const [pointLogs, setPointLogs] = useState([]);
+  const [pointLoading, setPointLoading] = useState(false);
+  const [pointError, setPointError] = useState(null);
 
   // Fetch user details
   const fetchUser = useCallback(async () => {
@@ -149,16 +157,32 @@ export default function AdminUserDetail() {
     }
   }, [id, t]);
 
+  // Fetch point logs
+  const fetchPointLogs = useCallback(async () => {
+    setPointLoading(true);
+    setPointError(null);
+    try {
+      const res = await getUserPointLogs(id);
+      setPointLogs(res.data?.logs || []);
+    } catch {
+      setPointLogs([]);
+      setPointError(t('fetchPointLogsError'));
+    } finally {
+      setPointLoading(false);
+    }
+  }, [id, t]);
+
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
 
   useEffect(() => {
     if (activeTab === 'activity') fetchLogs();
+    if (activeTab === 'point-logs') fetchPointLogs();
     if (activeTab === 'green-actions') fetchGreenActions();
     if (activeTab === 'progress') fetchProgress();
     if (activeTab === 'ranks') fetchRankLogs();
-  }, [activeTab, fetchLogs, fetchGreenActions, fetchProgress, fetchRankLogs]);
+  }, [activeTab, fetchLogs, fetchPointLogs, fetchGreenActions, fetchProgress, fetchRankLogs]);
 
   const ecoRatio = user?.total_activity > 0
     ? ((user.good_actions / user.total_activity) * 100).toFixed(1)
@@ -224,7 +248,7 @@ export default function AdminUserDetail() {
               <InfoItem icon={User} label={t('username')} value={user.username} />
               <InfoItem icon={Mail} label={t('email')} value={user.email} />
               <InfoItem icon={Shield} label={t('role')} value={label(user.role || 'user')} />
-              <InfoItem icon={Calendar} label={t('registered')} value={user.created_at ? new Date(user.created_at).toLocaleDateString('id-ID') : '—'} />
+              <InfoItem icon={Calendar} label={t('registered')} value={user.created_at ? new Date(user.created_at).toLocaleString('id-ID') : '—'} />
               <InfoItem icon={Clock} label={t('lastLogin')} value={user.last_login ? new Date(user.last_login).toLocaleString('id-ID') : '—'} />
             </div>
           </div>
@@ -247,10 +271,10 @@ export default function AdminUserDetail() {
                   </span>
                 }
               />
-              <InfoItem icon={Calendar} label={t('completedAt')} value={user.onboarding_completed_at ? new Date(user.onboarding_completed_at).toLocaleDateString('id-ID') : '—'} />
+              <InfoItem icon={Calendar} label={t('completedAt')} value={user.onboarding_completed_at ? new Date(user.onboarding_completed_at).toLocaleString('id-ID') : '—'} />
               <InfoItem icon={Activity} label={t('lastStep')} value={user.onboarding_last_step ?? '—'} />
               <InfoItem icon={BookOpen} label={t('guidebookViewed')} value={user.guidebook_viewed ? t('yes') : t('no')} />
-              <InfoItem icon={Calendar} label={t('lastDailySurvey')} value={user.last_daily_survey ? new Date(user.last_daily_survey).toLocaleDateString('id-ID') : '—'} />
+              <InfoItem icon={Calendar} label={t('lastDailySurvey')} value={user.last_daily_survey ? new Date(user.last_daily_survey).toLocaleString('id-ID') : '—'} />
             </div>
           </div>
 
@@ -360,6 +384,16 @@ export default function AdminUserDetail() {
                 </div>
               )}
 
+              {/* Point Logs Tab */}
+              {activeTab === 'point-logs' && (
+                <PointLogSection
+                  logs={pointLogs}
+                  loading={pointLoading}
+                  error={pointError}
+                  onRetry={fetchPointLogs}
+                />
+              )}
+
               {/* Custom Green Actions Tab */}
               {activeTab === 'green-actions' && (
                 <div>
@@ -408,7 +442,7 @@ export default function AdminUserDetail() {
                               )}
 
                               <p className="text-[11px] text-gray-400 mt-2">
-                                {t('created')}: {action.created_at ? new Date(action.created_at).toLocaleDateString('id-ID') : '—'}
+                                {t('created')}: {action.created_at ? new Date(action.created_at).toLocaleString('id-ID') : '—'}
                               </p>
                             </div>
                           </div>

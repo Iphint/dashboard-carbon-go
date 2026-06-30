@@ -44,7 +44,7 @@ export default function ActivityLogTable({ logs = [], page = 1, totalPages = 1, 
             {logs.map((log, idx) => (
               <tr key={log.id || idx} className="hover:bg-gray-50/50 transition-colors">
                 <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
-                  {log.date ? new Date(log.date).toLocaleDateString('id-ID') : '—'}
+                  {log.date ? new Date(log.date).toLocaleString('id-ID') : '—'}
                 </td>
                 <td className="px-4 py-3 font-medium text-gray-900">{log.name || '—'}</td>
                 <td className="px-4 py-3">

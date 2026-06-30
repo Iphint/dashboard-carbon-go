@@ -142,7 +142,7 @@ export default function RankTimeline({ rankLogs = [], summary = false, onEdit, o
                 {!summary && achieved && achievedDate && (
                   <div className="flex items-center gap-1 mt-1.5 text-xs text-gray-500">
                     <Calendar className="w-3 h-3" />
-                    {t('achievedOn')} {new Date(achievedDate).toLocaleDateString('id-ID')}
+                    {t('achievedOn')} {new Date(achievedDate).toLocaleString('id-ID')}
                   </div>
                 )}
               </div>
