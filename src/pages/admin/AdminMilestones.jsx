@@ -6,7 +6,11 @@ import EmptyState from '../../components/admin/EmptyState';
 import { createMilestone, deleteMilestone, getMilestones, updateMilestone } from '../../services/adminApi';
 import { useAdminLanguage } from '../../context/LanguageContext';
 
-const emptyForm = { name: '', description: '', target_value: '' };
+const emptyForm = {
+  name: '', name_en: '', name_id: '',
+  description: '', description_en: '', description_id: '',
+  target_value: '',
+};
 
 export default function AdminMilestones() {
   const { t } = useAdminLanguage();
@@ -40,7 +44,11 @@ export default function AdminMilestones() {
     setEditing(milestone);
     setForm(milestone ? {
       name: milestone.name || '',
+      name_en: milestone.name_en || '',
+      name_id: milestone.name_id || '',
       description: milestone.description || '',
+      description_en: milestone.description_en || '',
+      description_id: milestone.description_id || '',
       target_value: milestone.target || milestone.target_value || '',
     } : emptyForm);
     setFormOpen(true);
@@ -82,10 +90,35 @@ export default function AdminMilestones() {
       </div>
 
       {formOpen && (
-        <form onSubmit={save} className="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
-          <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required type="number" min="0" placeholder={t('targetJourneyPoints')} value={form.target_value} onChange={(e) => setForm({ ...form, target_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+        <form onSubmit={save} className="bg-white rounded-2xl border border-emerald-100 p-5 shadow-sm space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+            <input required type="number" min="0" placeholder={t('targetJourneyPoints')} value={form.target_value} onChange={(e) => setForm({ ...form, target_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+            <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
+          </div>
+
+          <div className="border-t pt-3">
+            <p className="text-[11px] text-gray-400 mb-2">{t('bilingualNote')}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-500">{t('nameIndonesian')}</span>
+                <input value={form.name_id} onChange={(e) => setForm({ ...form, name_id: e.target.value })} placeholder={t('name')} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-500">{t('nameEnglish')}</span>
+                <input value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} placeholder={t('name')} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-500">{t('descIndonesian')}</span>
+                <textarea value={form.description_id} onChange={(e) => setForm({ ...form, description_id: e.target.value })} placeholder={t('description')} rows={2} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-500">{t('descEnglish')}</span>
+                <textarea value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} placeholder={t('description')} rows={2} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+              </label>
+            </div>
+          </div>
+
           <div className="flex gap-2">
             <button disabled={saving} className="flex-1 rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60">{saving ? t('saving') : editing ? t('update') : t('create')}</button>
             <button type="button" onClick={closeForm} className="px-3 rounded-xl bg-gray-100 text-gray-600"><X className="w-4 h-4" /></button>
@@ -105,13 +138,13 @@ export default function AdminMilestones() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between gap-2">
-                    <h3 className="font-semibold text-gray-900">{m.name}</h3>
+                    <h3 className="font-semibold text-gray-900">{m.display_name || m.name}</h3>
                     <div className="flex gap-1">
                       <button onClick={() => openForm(m)} className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"><Edit2 className="w-3.5 h-3.5" /></button>
                       <button onClick={() => remove(m.id)} className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-500 mt-0.5">{m.description || t('completeThisMilestone')}</p>
+                  <p className="text-sm text-gray-500 mt-0.5">{m.display_description || m.description || t('completeThisMilestone')}</p>
                   <p className="text-xs text-gray-400 mt-2">{t('target')}: {m.target || m.target_value || 0} {t('journeyPoints')} · {t('achievedBy')} {m.achieved_count || 0} {t('users')}</p>
                 </div>
               </div>

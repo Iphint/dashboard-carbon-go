@@ -38,9 +38,9 @@ function MilestoneCard({ milestone }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className={`font-medium text-sm ${achieved ? 'text-emerald-800' : 'text-gray-700'}`}>
-            {milestone.name}
+            {milestone.display_name || milestone.name}
           </p>
-          <p className="text-xs text-gray-400 mt-0.5">{milestone.description || t('milestoneDescFallback')}</p>
+          <p className="text-xs text-gray-400 mt-0.5">{milestone.display_description || milestone.description || t('milestoneDescFallback')}</p>
           {!achieved && milestone.progress !== undefined && (
             <div className="mt-2">
               <ProgressBar value={milestone.progress} max={milestone.target || 100} color="emerald" />
@@ -68,9 +68,9 @@ function BadgeCard({ badge }) {
         {achieved ? <Award className="w-6 h-6" /> : <Lock className="w-6 h-6" />}
       </div>
       <p className={`font-medium text-sm ${achieved ? 'text-amber-800' : 'text-gray-600'}`}>
-        {badge.name}
+        {badge.display_name || badge.name}
       </p>
-      <p className="text-xs text-gray-400 mt-0.5">{badge.requirement || t('badgeDescFallback')}</p>
+      <p className="text-xs text-gray-400 mt-0.5">{badge.display_description || badge.description || badge.requirement || t('badgeDescFallback')}</p>
     </div>
   );
 }
@@ -97,12 +97,12 @@ function QuestCard({ quest }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <p className="font-medium text-sm text-gray-800">{quest.name}</p>
+            <p className="font-medium text-sm text-gray-800">{quest.display_name || quest.name}</p>
             <span className={`inline-flex px-2 py-0.5 text-[11px] font-medium rounded-full bg-${statusColor}-100 text-${statusColor}-700`}>
               {statusText}
             </span>
           </div>
-          <p className="text-xs text-gray-400">{quest.description || t('completeThisQuest')}</p>
+          <p className="text-xs text-gray-400">{quest.display_description || quest.description || t('completeThisQuest')}</p>
           {quest.progress !== undefined && !completed && (
             <div className="mt-2">
               <ProgressBar value={quest.progress} max={quest.target || 100} color={statusColor} />

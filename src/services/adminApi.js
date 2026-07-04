@@ -1,18 +1,18 @@
 import axios from 'axios';
 
 function resolveApiBase() {
-  return import.meta.env.VITE_API_BASE_URL || '/api';
+  const envBase = import.meta.env.VITE_API_BASE_URL;
+  if (envBase && !envBase.includes('localhost') && !envBase.includes('127.0.0.1')) {
+    return envBase;
+  }
+  return '/api';
 }
 
 const API_BASE = resolveApiBase();
-const LOCAL_FALLBACK_BASES = ['http://localhost:5001/api', 'http://localhost:5000/api', 'http://localhost:3001/api'];
+const LOCAL_FALLBACK_BASES = [];
 
 function fallbackBases() {
-  if (API_BASE !== '/api' && !API_BASE.includes('localhost') && !API_BASE.includes('127.0.0.1')) {
-    return [];
-  }
-
-  return LOCAL_FALLBACK_BASES.filter((base) => base !== API_BASE);
+  return [];
 }
 
 const apiClient = axios.create({

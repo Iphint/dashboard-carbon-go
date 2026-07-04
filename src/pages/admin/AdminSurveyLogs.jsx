@@ -13,7 +13,7 @@ function formatDate(value, language, options = {}) {
     const [year, month, day] = String(value).split('-').map(Number);
     return new Date(year, month - 1, day).toLocaleDateString(locale, options);
   }
-  return new Date(value).toLocaleString(locale, options);
+  return new Date(value).toLocaleString(locale, { ...options, timeZone: 'Asia/Jakarta' });
 }
 
 function formatDateTime(value, language) {

@@ -78,7 +78,7 @@ export default function RankTimeline({ rankLogs = [], summary = false, onEdit, o
           const summaryCount = countByRank[rankKey] || 0;
           const highlighted = summary || achieved;
           const rankLabel = rank.labelKey ? t(rank.labelKey) : rank.name;
-          const description = rank.descriptionKey ? t(rank.descriptionKey) : t('customRankDesc');
+          const description = rank.descriptionKey ? t(rank.descriptionKey) : (rank.description_en || rank.description_id || t('customRankDesc'));
 
           return (
             <div key={rank.name} className={`flex gap-4 ${summary ? `rounded-2xl border p-4 mb-3 ${c.bg} ${c.border}` : ''}`}>

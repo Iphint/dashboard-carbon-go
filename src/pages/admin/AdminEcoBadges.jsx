@@ -6,7 +6,11 @@ import EmptyState from '../../components/admin/EmptyState';
 import { createEcoBadge, deleteEcoBadge, getEcoBadges, updateEcoBadge } from '../../services/adminApi';
 import { useAdminLanguage } from '../../context/LanguageContext';
 
-const emptyForm = { name: '', description: '', icon: '🌿', requirement_type: 'carbon_points', requirement_value: '' };
+const emptyForm = {
+  name: '', name_en: '', name_id: '',
+  description: '', description_en: '', description_id: '',
+  icon: '🌿', requirement_type: 'carbon_points', requirement_value: '',
+};
 
 export default function AdminEcoBadges() {
   const { t } = useAdminLanguage();
@@ -40,7 +44,11 @@ export default function AdminEcoBadges() {
     setEditing(badge);
     setForm(badge ? {
       name: badge.name || '',
+      name_en: badge.name_en || '',
+      name_id: badge.name_id || '',
       description: badge.description || '',
+      description_en: badge.description_en || '',
+      description_id: badge.description_id || '',
       icon: badge.icon || '🌿',
       requirement_type: badge.requirement_type || 'carbon_points',
       requirement_value: badge.requirement_value || String(badge.requirement || '').replace(/\D/g, ''),
@@ -84,12 +92,37 @@ export default function AdminEcoBadges() {
       </div>
 
       {formOpen && (
-        <form onSubmit={save} className="bg-white rounded-2xl border border-amber-100 p-5 shadow-sm grid grid-cols-1 md:grid-cols-6 gap-3">
-          <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
-          <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm md:col-span-2" />
-          <input required placeholder={t('icon')} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <input required type="number" min="0" placeholder={t('targetCarbonUnit')} value={form.requirement_value} onChange={(e) => setForm({ ...form, requirement_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-          <div className="flex gap-2 md:col-span-6">
+        <form onSubmit={save} className="bg-white rounded-2xl border border-amber-100 p-5 shadow-sm space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <input required placeholder={t('name')} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+            <input required placeholder={t('icon')} value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+            <input required type="number" min="0" placeholder={t('targetCarbonUnit')} value={form.requirement_value} onChange={(e) => setForm({ ...form, requirement_value: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+            <input required placeholder={t('description')} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+          </div>
+
+          <div className="border-t pt-3">
+            <p className="text-[11px] text-gray-400 mb-2">{t('bilingualNote')}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-500">{t('nameIndonesian')}</span>
+                <input value={form.name_id} onChange={(e) => setForm({ ...form, name_id: e.target.value })} placeholder={t('name')} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-500">{t('nameEnglish')}</span>
+                <input value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} placeholder={t('name')} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-500">{t('descIndonesian')}</span>
+                <textarea value={form.description_id} onChange={(e) => setForm({ ...form, description_id: e.target.value })} placeholder={t('description')} rows={2} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-500">{t('descEnglish')}</span>
+                <textarea value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} placeholder={t('description')} rows={2} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+              </label>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
             <button disabled={saving} className="rounded-xl bg-emerald-600 text-white text-sm font-semibold disabled:opacity-60 px-5 py-2">{saving ? t('saving') : editing ? t('updateBadge') : t('createBadge')}</button>
             <button type="button" onClick={closeForm} className="px-3 rounded-xl bg-gray-100 text-gray-600"><X className="w-4 h-4" /></button>
           </div>
@@ -100,21 +133,28 @@ export default function AdminEcoBadges() {
         <EmptyState title={t('noEcoBadges')} description={t('noEcoBadgesDesc')} icon={Award} />
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
-          {badges.map((b, i) => (
-            <div key={b.id || i} className="rounded-2xl border border-amber-200 bg-amber-50/30 p-5 text-center transition-all hover:shadow-md">
-              <div className="flex justify-end gap-1 mb-1">
-                <button onClick={() => openForm(b)} className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"><Edit2 className="w-3.5 h-3.5" /></button>
-                <button onClick={() => remove(b.id)} className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
+          {badges.map((b, i) => {
+            const hasEarners = (b.achieved_count || 0) > 0;
+            return (
+              <div key={b.id || i} className={`rounded-2xl border p-5 text-center transition-all hover:shadow-md ${
+                hasEarners ? 'border-amber-200 bg-amber-50/30' : 'border-gray-100 bg-white'
+              }`}>
+                <div className="flex justify-end gap-1 mb-1">
+                  <button onClick={() => openForm(b)} className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100"><Edit2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => remove(b.id)} className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                </div>
+                <div className={`w-14 h-14 rounded-2xl mx-auto flex items-center justify-center mb-3 ${
+                  hasEarners ? 'bg-amber-500 text-white shadow-sm shadow-amber-200' : 'bg-gray-100 text-gray-400'
+                }`}>
+                  <span className="text-2xl">{b.icon || '🏅'}</span>
+                </div>
+                <h3 className={`font-semibold text-sm ${hasEarners ? 'text-amber-800' : 'text-gray-600'}`}>{b.display_name || b.name}</h3>
+                <p className="text-xs text-gray-500 mt-0.5">{b.display_description || b.description || t('meetRequirements')}</p>
+                <p className="text-[11px] text-gray-400 mt-1">{t('target')}: {b.requirement_value || 0} CU</p>
+                <p className="text-[11px] text-gray-400 mt-1">{t('earnedBy')} {b.achieved_count || 0} {t('users')}</p>
               </div>
-              <div className="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center mb-3 bg-amber-500 text-white shadow-sm shadow-amber-200">
-                <span className="text-2xl">{b.icon || '🏅'}</span>
-              </div>
-              <h3 className="font-semibold text-sm text-amber-800">{b.name}</h3>
-              <p className="text-xs text-gray-500 mt-0.5">{b.description || t('meetRequirements')}</p>
-              <p className="text-[11px] text-gray-400 mt-1">{t('target')}: {b.requirement_value || 0} CU</p>
-              <p className="text-[11px] text-gray-400 mt-1">{t('earnedBy')} {b.achieved_count || 0} {t('users')}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
