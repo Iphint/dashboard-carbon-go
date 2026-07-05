@@ -252,6 +252,8 @@ const translations = {
     noRequirement: 'None',
     rankDescription: 'Rank Description',
     none: 'None',
+    bahasaIndonesia: 'Indonesian Version',
+    bahasaInggris: 'English Version',
   },
   id: {
     managePlatform: 'Kelola platform eco kamu',
@@ -504,6 +506,8 @@ const translations = {
     noRequirement: 'Tidak ada',
     rankDescription: 'Deskripsi Pangkat',
     none: 'Tidak ada',
+    bahasaIndonesia: 'Versi Bahasa Indonesia',
+    bahasaInggris: 'Versi Bahasa Inggris',
   },
 };
 

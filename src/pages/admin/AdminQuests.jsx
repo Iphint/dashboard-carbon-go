@@ -116,27 +116,29 @@ export default function AdminQuests() {
             </label>
           </div>
 
-          <div className="border-t pt-3">
-            <p className="text-[11px] text-gray-400 mb-2">{t('bilingualNote')}</p>
+          <div className="border-t pt-4">
+            <h4 className="text-sm font-bold text-gray-700 mb-3">🇮🇩 {t('bahasaIndonesia')}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-gray-500">{t('nameIndonesian')}</span>
+                <span className="text-xs font-semibold text-gray-500">{t('name')}</span>
                 <input value={form.name_id} onChange={(e) => setForm({ ...form, name_id: e.target.value })} placeholder={t('name')} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-gray-500">{t('nameEnglish')}</span>
-                <input value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} placeholder={t('name')} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-              </label>
-              <label className="flex flex-col gap-1 md:col-span-2">
                 <span className="text-xs font-semibold text-gray-500">{t('description')}</span>
-                <textarea required value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder={t('description')} rows={2} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-gray-500">{t('descIndonesian')}</span>
                 <textarea value={form.description_id} onChange={(e) => setForm({ ...form, description_id: e.target.value })} placeholder={t('description')} rows={2} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
               </label>
+            </div>
+          </div>
+
+          <div className="border-t pt-4">
+            <h4 className="text-sm font-bold text-gray-700 mb-3">🇬🇧 {t('bahasaInggris')}</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-gray-500">{t('descEnglish')}</span>
+                <span className="text-xs font-semibold text-gray-500">{t('name')}</span>
+                <input value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} placeholder={t('name')} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold text-gray-500">{t('description')}</span>
                 <textarea value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} placeholder={t('description')} rows={2} className="px-3 py-2 rounded-xl border border-gray-200 text-sm" />
               </label>
             </div>

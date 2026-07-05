@@ -9,7 +9,9 @@ import EmptyState from './EmptyState';
 import { CardSkeleton } from './LoadingSkeleton';
 
 function formatDate(dateStr) {
-  const d = new Date(dateStr + 'T00:00:00');
+  if (!dateStr) return '—';
+  const [year, month, day] = String(dateStr).split('T')[0].split('-').map(Number);
+  const d = new Date(year, month - 1, day);
   return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
