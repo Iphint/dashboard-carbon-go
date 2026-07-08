@@ -3,7 +3,7 @@ import {
   Users, Box, Activity, ThumbsUp, ThumbsDown, Percent,
   Leaf, Sword, Award, Target, TrendingUp, BarChart3
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, CartesianGrid } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area, CartesianGrid, Legend } from 'recharts';
 import StatCard from '../../components/admin/StatCard';
 import { CardSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
