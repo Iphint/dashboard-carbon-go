@@ -10,21 +10,25 @@ import ErrorState from '../../components/admin/ErrorState';
 import { getDashboardSummary, getDashboardPointSummary } from '../../services/adminApi';
 import { useAdminLanguage } from '../../context/LanguageContext';
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 function formatDate(dateStr) {
   if (!dateStr) return '—';
-  const [year, month, day] = String(dateStr).split('T')[0].split('-').map(Number);
-  const d = new Date(year, month - 1, day);
-  return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const p = String(dateStr).split('T')[0].split('-');
+  if (p.length < 3) return dateStr;
+  return `${p[2]}/${p[1]}/${p[0]}`;
 }
 
 function formatMonth(dateStr) {
   if (!dateStr) return '—';
-  const [year, month] = String(dateStr).split('-').map(Number);
-  const d = new Date(year, month - 1);
-  return d.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
+  const p = String(dateStr).split('-');
+  if (p.length < 2) return dateStr;
+  const m = parseInt(p[1], 10);
+  return `${MONTHS[m - 1] || p[1]} ${p[0]}`;
 }
 
 function formatYear(yearStr) {
+  if (!yearStr) return '—';
   return String(yearStr);
 }
 
