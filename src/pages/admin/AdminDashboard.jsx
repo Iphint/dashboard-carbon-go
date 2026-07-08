@@ -28,12 +28,19 @@ function formatYear(yearStr) {
   return String(yearStr);
 }
 
-function PointTooltip({ active, payload, label }) {
+function pointLabelFormat(label, group) {
+  if (!label) return '—';
+  if (group === 'monthly') return formatMonth(label);
+  if (group === 'yearly') return formatYear(label);
+  return formatDate(label);
+}
+
+function PointTooltip({ active, payload, label, group }) {
   const { t } = useAdminLanguage();
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-3 text-sm">
-      <p className="font-semibold text-gray-700 mb-1">{label}</p>
+      <p className="font-semibold text-gray-700 mb-1">{pointLabelFormat(label, group)}</p>
       {payload.map((entry, i) => (
         <p key={i} style={{ color: entry.color }} className="text-xs">
           {entry.name}: <span className="font-semibold">{Number(entry.value).toLocaleString()}</span>
@@ -117,15 +124,13 @@ export default function AdminDashboard() {
   ];
 
   const pointChartData = useMemo(() => {
-    const fmt = pointGroup === 'monthly' ? formatMonth : pointGroup === 'yearly' ? formatYear : formatDate;
     return pointData.map((log) => ({
       date: log.date,
       [t('pointsIn')]: log.points_in,
       [t('pointsOut')]: -log.points_out,
       [t('cumulative')]: log.cumulative,
-      _label: fmt(log.date),
     }));
-  }, [pointData, t, pointGroup]);
+  }, [pointData, t]);
 
   // Demo chart data (only show when real data is available)
   const activityChartData = data?.activity_chart || [];
@@ -286,9 +291,9 @@ export default function AdminDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={pointChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="_label" tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="date" tickFormatter={(val) => pointLabelFormat(val, pointGroup)} tick={{ fontSize: 11 }} />
                     <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip content={<PointTooltip />} />
+                    <Tooltip content={<PointTooltip group={pointGroup} />} />
                     <Legend />
                     <Bar dataKey={t('pointsIn')} fill="#10b981" radius={[4, 4, 0, 0]} />
                     <Bar dataKey={t('pointsOut')} fill="#ef4444" radius={[4, 4, 0, 0]} />
