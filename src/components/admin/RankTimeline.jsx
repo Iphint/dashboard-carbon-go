@@ -24,11 +24,22 @@ function buildRankList(rankLogs) {
   const logByKey = new Map(
     rankLogs.map((log) => [String(log.rank || log.rank_name || '').trim().toLowerCase(), log])
   );
-  const rankList = DEFAULT_RANKS.map((rank) => ({
-    ...rank,
-    id: logByKey.get(rank.name.toLowerCase())?.id,
-    is_default: true,
-  }));
+  const rankList = DEFAULT_RANKS.map((rank) => {
+    const match = logByKey.get(rank.name.toLowerCase());
+    return {
+      ...rank,
+      id: match?.id,
+      rank_name: match?.rank_name || rank.name,
+      name_en: match?.name_en || '',
+      name_id: match?.name_id || '',
+      description_en: match?.description_en || '',
+      description_id: match?.description_id || '',
+      milestone_id: match?.milestone_id || '',
+      badge_id: match?.badge_id || '',
+      quest_id: match?.quest_id || '',
+      is_default: true,
+    };
+  });
 
   rankLogs.forEach((log) => {
     const rankName = String(log.rank || log.rank_name || '').trim();
@@ -50,7 +61,7 @@ function buildRankList(rankLogs) {
 }
 
 export default function RankTimeline({ rankLogs = [], summary = false, onEdit, onDelete }) {
-  const { t } = useAdminLanguage();
+  const { t, language } = useAdminLanguage();
   const ranks = buildRankList(rankLogs);
   const achievedRanks = {};
   rankLogs.forEach((log) => {
@@ -77,8 +88,11 @@ export default function RankTimeline({ rankLogs = [], summary = false, onEdit, o
           const isLast = index === ranks.length - 1;
           const summaryCount = countByRank[rankKey] || 0;
           const highlighted = summary || achieved;
-          const rankLabel = rank.labelKey ? t(rank.labelKey) : rank.name;
-          const description = rank.descriptionKey ? t(rank.descriptionKey) : (rank.description_en || rank.description_id || t('customRankDesc'));
+          const rankLabel = language === 'id' ? (rank.name_id || rank.name) : (rank.name_en || rank.name);
+          const defaultDesc = rank.descriptionKey ? t(rank.descriptionKey) : t('customRankDesc');
+          const description = language === 'id'
+            ? (rank.description_id || rank.description_en || defaultDesc)
+            : (rank.description_en || rank.description_id || defaultDesc);
 
           return (
             <div key={rank.name} className={`flex gap-4 ${summary ? `rounded-2xl border p-4 mb-3 ${c.bg} ${c.border}` : ''}`}>
@@ -117,7 +131,7 @@ export default function RankTimeline({ rankLogs = [], summary = false, onEdit, o
                       {t('locked')}
                     </span>
                   )}
-                  {summary && rank.custom && !rank.is_default && (
+                  {summary && (
                     <div className="ml-auto flex items-center gap-1">
                       <button
                         type="button"
@@ -127,14 +141,16 @@ export default function RankTimeline({ rankLogs = [], summary = false, onEdit, o
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => onDelete?.(rank)}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white text-gray-500 border border-gray-200 hover:text-red-600 hover:border-red-200"
-                        title={t('deleteRank')}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      {!rank.is_default && (
+                        <button
+                          type="button"
+                          onClick={() => onDelete?.(rank)}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white text-gray-500 border border-gray-200 hover:text-red-600 hover:border-red-200"
+                          title={t('deleteRank')}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Users, Box, Activity, ThumbsUp, ThumbsDown, Percent,
   Leaf, Sword, Award, Target, TrendingUp, BarChart3
@@ -7,14 +7,53 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import StatCard from '../../components/admin/StatCard';
 import { CardSkeleton } from '../../components/admin/LoadingSkeleton';
 import ErrorState from '../../components/admin/ErrorState';
-import { getDashboardSummary } from '../../services/adminApi';
+import { getDashboardSummary, getDashboardPointSummary } from '../../services/adminApi';
 import { useAdminLanguage } from '../../context/LanguageContext';
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const [year, month, day] = String(dateStr).split('T')[0].split('-').map(Number);
+  const d = new Date(year, month - 1, day);
+  return d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function formatMonth(dateStr) {
+  if (!dateStr) return '—';
+  const [year, month] = String(dateStr).split('-').map(Number);
+  const d = new Date(year, month - 1);
+  return d.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
+}
+
+function formatYear(yearStr) {
+  return String(yearStr);
+}
+
+function PointTooltip({ active, payload, label }) {
+  const { t } = useAdminLanguage();
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-3 text-sm">
+      <p className="font-semibold text-gray-700 mb-1">{label}</p>
+      {payload.map((entry, i) => (
+        <p key={i} style={{ color: entry.color }} className="text-xs">
+          {entry.name}: <span className="font-semibold">{Number(entry.value).toLocaleString()}</span>
+        </p>
+      ))}
+    </div>
+  );
+}
 
 const FILTERS = [
   { labelKey: 'today', value: 'today' },
   { labelKey: 'last7Days', value: '7days' },
   { labelKey: 'last30Days', value: '30days' },
   { labelKey: 'allTime', value: 'all' },
+];
+
+const GROUP_FILTERS = [
+  { labelKey: 'daily', value: 'daily' },
+  { labelKey: 'monthly', value: 'monthly' },
+  { labelKey: 'yearly', value: 'yearly' },
 ];
 
 const PIE_COLORS = ['#10b981', '#ef4444'];
@@ -26,6 +65,10 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [pointGroup, setPointGroup] = useState('daily');
+  const [pointData, setPointData] = useState([]);
+  const [pointLoading, setPointLoading] = useState(false);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -33,7 +76,6 @@ export default function AdminDashboard() {
       const response = await getDashboardSummary(filter);
       setData(response.data);
     } catch {
-      // API not available — show empty state with no data
       setData(null);
       setError(t('apiUnavailable'));
     } finally {
@@ -41,9 +83,25 @@ export default function AdminDashboard() {
     }
   }, [filter, t]);
 
+  const fetchPointData = useCallback(async () => {
+    setPointLoading(true);
+    try {
+      const res = await getDashboardPointSummary(pointGroup);
+      setPointData(res.data?.logs || []);
+    } catch {
+      setPointData([]);
+    } finally {
+      setPointLoading(false);
+    }
+  }, [pointGroup]);
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    fetchPointData();
+  }, [fetchPointData]);
 
   const stats = [
     { title: t('totalUsers'), value: data?.total_users, icon: Users, color: 'blue' },
@@ -57,6 +115,17 @@ export default function AdminDashboard() {
     { title: t('ecoBadgesEarned'), value: data?.total_badges_earned, icon: Award, color: 'amber' },
     { title: t('milestonesCompleted'), value: data?.total_milestones_completed, icon: Target, color: 'pink' },
   ];
+
+  const pointChartData = useMemo(() => {
+    const fmt = pointGroup === 'monthly' ? formatMonth : pointGroup === 'yearly' ? formatYear : formatDate;
+    return pointData.map((log) => ({
+      date: log.date,
+      [t('pointsIn')]: log.points_in,
+      [t('pointsOut')]: -log.points_out,
+      [t('cumulative')]: log.cumulative,
+      _label: fmt(log.date),
+    }));
+  }, [pointData, t, pointGroup]);
 
   // Demo chart data (only show when real data is available)
   const activityChartData = data?.activity_chart || [];
@@ -124,10 +193,11 @@ export default function AdminDashboard() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                    <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#9ca3af" />
+                    <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 11 }} stroke="#9ca3af" />
                     <YAxis tick={{ fontSize: 11 }} stroke="#9ca3af" />
                     <Tooltip
                       contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '12px' }}
+                      labelFormatter={formatDate}
                     />
                     <Area type="monotone" dataKey="count" stroke="#10b981" fill="url(#colorActivities)" strokeWidth={2} />
                   </AreaChart>
@@ -184,6 +254,52 @@ export default function AdminDashboard() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* CU Accumulation Chart */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
+              <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                <BarChart3 className="w-4 h-4 text-emerald-500" />
+                {t('pointAccumulation')}
+              </h3>
+              <div className="flex items-center gap-2">
+                {GROUP_FILTERS.map((f) => (
+                  <button
+                    key={f.value}
+                    onClick={() => setPointGroup(f.value)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
+                      pointGroup === f.value
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {t(f.labelKey)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {pointLoading ? (
+              <div className="h-64 flex items-center justify-center text-sm text-gray-400">{t('loading')}</div>
+            ) : pointChartData.length > 0 ? (
+              <div className="h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={pointChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis dataKey="_label" tick={{ fontSize: 11 }} />
+                    <YAxis tick={{ fontSize: 11 }} />
+                    <Tooltip content={<PointTooltip />} />
+                    <Legend />
+                    <Bar dataKey={t('pointsIn')} fill="#10b981" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey={t('pointsOut')} fill="#ef4444" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-64 flex items-center justify-center text-sm text-gray-400">
+                {t('noChartData')}
+              </div>
+            )}
           </div>
         </>
       )}

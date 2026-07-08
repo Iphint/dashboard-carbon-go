@@ -74,6 +74,9 @@ export const logoutAuth = () => Promise.resolve({ data: { message: 'Admin local 
 export const getDashboardSummary = (filter = 'all') =>
   apiClient.get('/admin/dashboard-summary', { params: { filter } });
 
+export const getDashboardPointSummary = (group = 'daily') =>
+  apiClient.get('/admin/dashboard-point-summary', { params: { group } });
+
 // Users
 export const getUsers = (params = {}) =>
   apiClient.get('/admin/users', { params });
