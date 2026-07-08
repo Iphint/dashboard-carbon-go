@@ -12,31 +12,41 @@ import { useAdminLanguage } from '../../context/LanguageContext';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  const p = String(dateStr).split('T')[0].split('-');
-  if (p.length < 3) return dateStr;
+function fmtDaily(val) {
+  if (!val) return '—';
+  if (typeof val === 'object') {
+    const y = val.getFullYear();
+    const m = String(val.getMonth() + 1).padStart(2, '0');
+    const d = String(val.getDate()).padStart(2, '0');
+    return `${d}/${m}/${y}`;
+  }
+  const p = String(val).split('T')[0].split('-');
+  if (p.length < 3) return String(val);
   return `${p[2]}/${p[1]}/${p[0]}`;
 }
 
-function formatMonth(dateStr) {
-  if (!dateStr) return '—';
-  const p = String(dateStr).split('-');
-  if (p.length < 2) return dateStr;
+function fmtMonthly(val) {
+  if (!val) return '—';
+  if (typeof val === 'object') {
+    return `${MONTHS[val.getMonth()]} ${val.getFullYear()}`;
+  }
+  const p = String(val).split('-');
+  if (p.length < 2) return String(val);
   const m = parseInt(p[1], 10);
   return `${MONTHS[m - 1] || p[1]} ${p[0]}`;
 }
 
-function formatYear(yearStr) {
-  if (!yearStr) return '—';
-  return String(yearStr);
+function fmtYearly(val) {
+  if (!val) return '—';
+  if (typeof val === 'object') return String(val.getFullYear());
+  return String(val).replace(/\..*$/, '');
 }
 
-function pointLabelFormat(label, group) {
-  if (!label) return '—';
-  if (group === 'monthly') return formatMonth(label);
-  if (group === 'yearly') return formatYear(label);
-  return formatDate(label);
+function pointLabelFormat(val, group) {
+  if (!val && val !== 0) return '—';
+  if (group === 'monthly') return fmtMonthly(val);
+  if (group === 'yearly') return fmtYearly(val);
+  return fmtDaily(val);
 }
 
 function PointTooltip({ active, payload, label, group }) {
@@ -202,11 +212,11 @@ export default function AdminDashboard() {
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                    <XAxis dataKey="date" tickFormatter={formatDate} tick={{ fontSize: 11 }} stroke="#9ca3af" />
+                    <XAxis dataKey="date" type="category" tickFormatter={fmtDaily} tick={{ fontSize: 11 }} stroke="#9ca3af" />
                     <YAxis tick={{ fontSize: 11 }} stroke="#9ca3af" />
                     <Tooltip
                       contentStyle={{ borderRadius: '12px', border: '1px solid #e5e7eb', fontSize: '12px' }}
-                      labelFormatter={formatDate}
+                      labelFormatter={fmtDaily}
                     />
                     <Area type="monotone" dataKey="count" stroke="#10b981" fill="url(#colorActivities)" strokeWidth={2} />
                   </AreaChart>
@@ -295,7 +305,7 @@ export default function AdminDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={pointChartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="date" tickFormatter={(val) => pointLabelFormat(val, pointGroup)} tick={{ fontSize: 11 }} />
+                    <XAxis dataKey="date" type="category" tickFormatter={(val) => pointLabelFormat(val, pointGroup)} tick={{ fontSize: 11 }} />
                     <YAxis tick={{ fontSize: 11 }} />
                     <Tooltip content={<PointTooltip group={pointGroup} />} />
                     <Legend />
