@@ -208,9 +208,12 @@ export default function AdminSurveyLogs() {
               ) : detail.history?.length ? (
                 <div className="space-y-2">
                   {detail.history.map((item) => (
-                    <div key={item.survey_date} className="flex items-center justify-between rounded-xl border border-gray-100 px-4 py-3">
+                    <div key={`${item.survey_date}-${item.entry_index}`} className="flex items-center justify-between rounded-xl border border-gray-100 px-4 py-3">
                       <span className="text-sm font-medium text-gray-800">
                         {formatDate(item.survey_date, language)}
+                        {item.entry_index > 1 && (
+                          <span className="text-xs font-normal text-gray-400"> ({item.entry_index})</span>
+                        )}
                         {item.last_entry_at && (
                           <span className="ml-2 text-xs font-normal text-gray-400">
                             {formatDate(item.last_entry_at, language, { hour: '2-digit', minute: '2-digit', second: '2-digit' })}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, User, Mail, Shield, Calendar, Clock, CheckCircle,
@@ -80,6 +80,8 @@ export default function AdminUserDetail() {
   const [pointLogs, setPointLogs] = useState([]);
   const [pointLoading, setPointLoading] = useState(false);
   const [pointError, setPointError] = useState(null);
+  const pointIntervalRef = useRef(null);
+  const progressIntervalRef = useRef(null);
 
   // Fetch user details
   const fetchUser = useCallback(async () => {
@@ -128,17 +130,20 @@ export default function AdminUserDetail() {
   }, [id, t]);
 
   // Fetch progress
-  const fetchProgress = useCallback(async () => {
-    setProgressLoading(true);
-    setProgressError(null);
+  const fetchProgress = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setProgressLoading(true);
+    if (!silent) setProgressError(null);
     try {
       const res = await getUserProgress(id);
       setProgress(res.data);
+      if (!silent) setProgressError(null);
     } catch {
-      setProgress(null);
-      setProgressError(t('fetchProgressError'));
+      if (!silent) {
+        setProgress(null);
+        setProgressError(t('fetchProgressError'));
+      }
     } finally {
-      setProgressLoading(false);
+      if (!silent) setProgressLoading(false);
     }
   }, [id, t]);
 
@@ -158,17 +163,20 @@ export default function AdminUserDetail() {
   }, [id, t]);
 
   // Fetch point logs
-  const fetchPointLogs = useCallback(async () => {
-    setPointLoading(true);
-    setPointError(null);
+  const fetchPointLogs = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setPointLoading(true);
+    if (!silent) setPointError(null);
     try {
       const res = await getUserPointLogs(id);
       setPointLogs(res.data?.logs || []);
+      if (!silent) setPointError(null);
     } catch {
-      setPointLogs([]);
-      setPointError(t('fetchPointLogsError'));
+      if (!silent) {
+        setPointLogs([]);
+        setPointError(t('fetchPointLogsError'));
+      }
     } finally {
-      setPointLoading(false);
+      if (!silent) setPointLoading(false);
     }
   }, [id, t]);
 
@@ -183,6 +191,48 @@ export default function AdminUserDetail() {
     if (activeTab === 'progress') fetchProgress();
     if (activeTab === 'ranks') fetchRankLogs();
   }, [activeTab, fetchLogs, fetchPointLogs, fetchGreenActions, fetchProgress, fetchRankLogs]);
+
+  // Real-time polling for point-logs tab
+  useEffect(() => {
+    if (activeTab === 'point-logs') {
+      fetchPointLogs({ silent: true });
+      pointIntervalRef.current = setInterval(() => {
+        fetchPointLogs({ silent: true });
+      }, 15000);
+    } else {
+      if (pointIntervalRef.current) {
+        clearInterval(pointIntervalRef.current);
+        pointIntervalRef.current = null;
+      }
+    }
+    return () => {
+      if (pointIntervalRef.current) {
+        clearInterval(pointIntervalRef.current);
+        pointIntervalRef.current = null;
+      }
+    };
+  }, [activeTab, fetchPointLogs]);
+
+  // Real-time polling for progress tab
+  useEffect(() => {
+    if (activeTab === 'progress') {
+      fetchProgress({ silent: true });
+      progressIntervalRef.current = setInterval(() => {
+        fetchProgress({ silent: true });
+      }, 15000);
+    } else {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+    }
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+    };
+  }, [activeTab, fetchProgress]);
 
   const ecoRatio = user?.total_activity > 0
     ? ((user.good_actions / user.total_activity) * 100).toFixed(1)
