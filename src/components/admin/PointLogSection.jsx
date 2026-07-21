@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
 } from 'recharts';
-import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, ChevronDown, ChevronRight } from 'lucide-react';
 import { useAdminLanguage } from '../../context/LanguageContext';
 import EmptyState from './EmptyState';
 import { CardSkeleton } from './LoadingSkeleton';
@@ -30,8 +30,15 @@ function CustomTooltip({ active, payload, label }) {
   );
 }
 
-export default function PointLogSection({ logs = [], loading = false, error = null, onRetry }) {
-  const { t } = useAdminLanguage();
+const typeBadge = {
+  good: 'bg-emerald-100 text-emerald-700',
+  bad: 'bg-red-100 text-red-700',
+  neutral: 'bg-gray-100 text-gray-600',
+  custom: 'bg-blue-100 text-blue-700',
+};
+
+export default function PointLogSection({ logs = [], entries = [], loading = false, error = null, onRetry }) {
+  const { t, language } = useAdminLanguage();
 
   const chartData = useMemo(() => {
     return logs.map((log) => ({
@@ -41,6 +48,19 @@ export default function PointLogSection({ logs = [], loading = false, error = nu
       [t('cumulative')]: log.cumulative,
     }));
   }, [logs, t]);
+
+  // Group entries by date for expandable rows
+  const groupedEntries = useMemo(() => {
+    const map = {};
+    for (const e of entries) {
+      if (!map[e.date]) map[e.date] = [];
+      map[e.date].push(e);
+    }
+    return map;
+  }, [entries]);
+
+  // Track expanded dates
+  const [expandedDates, setExpandedDates] = useState({});
 
   if (loading) return <CardSkeleton count={4} />;
 
@@ -62,7 +82,6 @@ export default function PointLogSection({ logs = [], loading = false, error = nu
   }
 
   const latest = logs[logs.length - 1];
-  const first = logs[0];
 
   return (
     <div className="space-y-6">
@@ -102,7 +121,7 @@ export default function PointLogSection({ logs = [], loading = false, error = nu
         </div>
       </div>
 
-      {/* Chart */}
+      {/* Charts */}
       <div className="rounded-xl border border-gray-100 bg-white p-6">
         <h3 className="text-sm font-semibold text-gray-700 mb-4">{t('pointChartTitle')}</h3>
         <div className="h-72">
@@ -125,7 +144,6 @@ export default function PointLogSection({ logs = [], loading = false, error = nu
           </ResponsiveContainer>
         </div>
 
-        {/* Daily bar chart */}
         <h3 className="text-sm font-semibold text-gray-700 mt-6 mb-4">{t('dailyPoints')}</h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
@@ -142,31 +160,84 @@ export default function PointLogSection({ logs = [], loading = false, error = nu
         </div>
       </div>
 
-      {/* Daily Table */}
+      {/* Detail Table */}
       <div className="rounded-xl border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="w-8 px-2 py-3"></th>
                 <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('date')}</th>
-                <th className="text-right px-4 py-3 font-semibold text-emerald-600">{t('pointsIn')}</th>
-                <th className="text-right px-4 py-3 font-semibold text-red-500">{t('pointsOut')}</th>
-                <th className="text-right px-4 py-3 font-semibold text-blue-600">{t('netPoints')}</th>
-                <th className="text-right px-4 py-3 font-semibold text-amber-600">{t('cumulative')}</th>
+                <th className="text-left px-4 py-3 font-semibold text-gray-600">{t('activity')}</th>
+                <th className="text-right px-4 py-3 font-semibold text-gray-600">{t('points')}</th>
+                <th className="text-center px-4 py-3 font-semibold text-gray-600">{t('type')}</th>
               </tr>
             </thead>
             <tbody>
-              {[...logs].reverse().map((log, i) => (
-                <tr key={log.date} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
-                  <td className="px-4 py-3 text-gray-700">{formatDate(log.date)}</td>
-                  <td className="px-4 py-3 text-right text-emerald-600 font-medium">+{log.points_in}</td>
-                  <td className="px-4 py-3 text-right text-red-500 font-medium">{log.points_out > 0 ? `-${log.points_out}` : '0'}</td>
-                  <td className="px-4 py-3 text-right font-medium" style={{ color: log.net_points >= 0 ? '#059669' : '#dc2626' }}>
-                    {log.net_points >= 0 ? `+${log.net_points}` : log.net_points}
-                  </td>
-                  <td className="px-4 py-3 text-right font-bold text-amber-600">{log.cumulative}</td>
-                </tr>
-              ))}
+              {[...logs].reverse().map((log) => {
+                const dateEntries = groupedEntries[log.date] || [];
+                const expanded = expandedDates[log.date] || false;
+                const hasMultiple = dateEntries.length > 1;
+                const nameKey = language === 'en' ? 'name_en' : 'name_id';
+
+                return (
+                  <Fragment key={log.date}>
+                    {/* Aggregated row */}
+                    <tr className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                      <td className="px-2 py-3 text-center">
+                        {hasMultiple && (
+                          <button
+                            onClick={() => setExpandedDates(prev => ({ ...prev, [log.date]: !prev[log.date] }))}
+                            className="p-0.5 rounded hover:bg-gray-200 cursor-pointer"
+                          >
+                            {expanded ? <ChevronDown className="w-3.5 h-3.5 text-gray-400" /> : <ChevronRight className="w-3.5 h-3.5 text-gray-400" />}
+                          </button>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700 font-medium">
+                        {formatDate(log.date)}
+                        {hasMultiple && <span className="text-xs text-gray-400 ml-1">({dateEntries.length})</span>}
+                      </td>
+                      <td className="px-4 py-3 text-gray-500">
+                        {log.total_activities} {t('activity')}
+                      </td>
+                      <td className="px-4 py-3 text-right font-medium">
+                        <span className="text-emerald-600">+{log.points_in}</span>
+                        {log.points_out > 0 && <span className="text-red-500 ml-1">-{log.points_out}</span>}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-600`}>
+                          {t('netPoints')}
+                        </span>
+                      </td>
+                    </tr>
+
+                    {/* Expanded detail rows */}
+                    {expanded && dateEntries.map((e) => (
+                      <tr key={e.id} className="bg-gray-50/30 border-b border-gray-50">
+                        <td className="px-2 py-2.5"></td>
+                        <td className="px-4 py-2.5 text-gray-500 text-xs">
+                          {formatDate(e.date)}
+                          <span className="text-gray-400 ml-1">({e.entry_index})</span>
+                        </td>
+                        <td className="px-4 py-2.5 text-gray-700 text-sm">
+                          {e[nameKey] || e.name_en || e.name_id}
+                        </td>
+                        <td className={`px-4 py-2.5 text-right text-sm font-medium ${
+                          e.carbon_value >= 0 ? 'text-emerald-600' : 'text-red-500'
+                        }`}>
+                          {e.carbon_value >= 0 ? `+${e.carbon_value}` : e.carbon_value}
+                        </td>
+                        <td className="px-4 py-2.5 text-center">
+                          <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${typeBadge[e.type] || typeBadge.neutral}`}>
+                            {t(e.type)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>

@@ -78,6 +78,7 @@ export default function AdminUserDetail() {
 
   // Point logs
   const [pointLogs, setPointLogs] = useState([]);
+  const [pointEntries, setPointEntries] = useState([]);
   const [pointLoading, setPointLoading] = useState(false);
   const [pointError, setPointError] = useState(null);
   const pointIntervalRef = useRef(null);
@@ -169,10 +170,12 @@ export default function AdminUserDetail() {
     try {
       const res = await getUserPointLogs(id);
       setPointLogs(res.data?.logs || []);
+      setPointEntries(res.data?.entries || []);
       if (!silent) setPointError(null);
     } catch {
       if (!silent) {
         setPointLogs([]);
+        setPointEntries([]);
         setPointError(t('fetchPointLogsError'));
       }
     } finally {
@@ -438,6 +441,7 @@ export default function AdminUserDetail() {
               {activeTab === 'point-logs' && (
                 <PointLogSection
                   logs={pointLogs}
+                  entries={pointEntries}
                   loading={pointLoading}
                   error={pointError}
                   onRetry={fetchPointLogs}
